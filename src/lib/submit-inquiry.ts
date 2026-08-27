@@ -1,12 +1,17 @@
 "use server";
 
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 import { COMPANY } from "@/lib/site";
 
 export type InquiryState = {
   ok: boolean;
   message: string;
 } | null;
+
+// 네이버웍스 SMTP (biz@rosegoldsoftware.co.kr) — 사내에서 이미 사용 중인 발송 계정.
+const SMTP_HOST = process.env.SMTP_HOST ?? "smtp.worksmobile.com";
+const SMTP_PORT = Number(process.env.SMTP_PORT ?? 465);
+const SMTP_USER = process.env.SMTP_USER ?? "biz@rosegoldsoftware.co.kr";
 
 function textOf(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
@@ -26,8 +31,9 @@ export async function submitInquiry(
     return { ok: false, message: "필수 항목을 입력해 주세요." };
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
+  const password = process.env.SMTP_PASSWORD;
+  if (!password) {
+    console.error("[inquiry] SMTP_PASSWORD 가 설정되어 있지 않습니다.");
     return {
       ok: false,
       message: "메일 발송 설정이 되어 있지 않습니다. 잠시 후 다시 시도해 주세요.",
@@ -42,17 +48,26 @@ export async function submitInquiry(
     `알게된 경로: ${source || "-"}`,
   ].join("\n");
 
-  const resend = new Resend(apiKey);
-  const { error } = await resend.emails.send({
-    from:
-      process.env.CONTACT_FROM ??
-      `${COMPANY.name} <beth.t@example.com>`,
-    to: [...COMPANY.inquiryTo],
-    subject: `[상담 요청] ${store}`,
-    text: body,
+  const transporter = nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_PORT === 465,
+    auth: { user: SMTP_USER, pass: password },
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
+    socketTimeout: 15_000,
   });
 
-  if (error) {
+  try {
+    await transporter.sendMail({
+      // 발신 주소는 인증 계정과 같아야 네이버웍스가 거부하지 않는다.
+      from: { name: COMPANY.name, address: SMTP_USER },
+      to: [...COMPANY.inquiryTo],
+      subject: `[상담 요청] ${store}`,
+      text: body,
+    });
+  } catch (error) {
+    console.error("[inquiry] 메일 발송 실패", error);
     return { ok: false, message: "문의 전송에 실패했습니다. 잠시 후 다시 시도해 주세요." };
   }
 
