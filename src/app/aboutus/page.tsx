@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { CtaButton } from "@/components/CtaButton";
-import { COMPANY, IMG } from "@/lib/site";
+import { IMG } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "회사 소개 | 슬기로운 낭만지기",
@@ -38,16 +37,6 @@ export default function AboutPage() {
             빈틈없는 24시간 무인 운영으로 사장님의 가장 든든한 파트너가
             되어드리겠습니다.
           </p>
-        </div>
-        <div className="mt-12 rounded-2xl bg-cream p-6 text-sm leading-7 text-muted">
-          <p className="text-base font-semibold text-ink">{COMPANY.legal}</p>
-          <p className="mt-3">주소: {COMPANY.address}</p>
-          <p>지사: {COMPANY.branch}</p>
-          <p>대표자: {COMPANY.ceo}</p>
-          <p>사업자등록번호: {COMPANY.bizNo}</p>
-        </div>
-        <div className="mt-10">
-          <CtaButton>우리 업장 맞춤 상담받기</CtaButton>
         </div>
       </div>
     </main>

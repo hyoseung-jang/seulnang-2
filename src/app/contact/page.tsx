@@ -8,17 +8,17 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <main className="mx-auto grid max-w-6xl gap-10 px-5 py-16 md:grid-cols-2 md:px-8 md:py-24">
-      <div>
-        <h1 className="text-[32px] font-semibold tracking-tight md:text-[48px]">
+    <main className="bg-cream">
+      <div className="mx-auto max-w-[560px] px-5 py-16 md:px-8 md:py-24">
+        <h1 className="text-center text-[28px] font-bold tracking-[-0.02em] md:text-[32px]">
           우리 업장 맞춤 상담받기
         </h1>
-        <p className="mt-4 text-gold-text">*100% 무료 상담</p>
-        <p className="mt-6 text-[18px] leading-7 text-muted">
+        <p className="mt-3 text-center text-[15px] text-[#e11d2e]">*100% 무료 상담</p>
+        <p className="mt-3 text-center text-[15px] leading-6 text-muted">
           3일 이내에, 작성해주신 연락처로 연락드리겠습니다.
         </p>
+        <ContactForm />
       </div>
-      <ContactForm />
     </main>
   );
 }

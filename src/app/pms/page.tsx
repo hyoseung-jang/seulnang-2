@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { CtaButton } from "@/components/CtaButton";
+import { Reveal } from "@/components/Reveal";
 import { IMG } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -31,47 +31,76 @@ const features = [
   },
 ];
 
-const extras = ["요일별 가격 관리", "비품/차키 보관함 관리", "고객 요청 관리", "포인트 관리"];
+const extras = [
+  { no: "05", title: "요일별 가격 관리" },
+  { no: "06", title: "비품/차키 보관함 관리" },
+  { no: "07", title: "고객 요청 관리" },
+  { no: "08", title: "포인트 관리" },
+];
 
 export default function PmsPage() {
   return (
-    <main className="mx-auto max-w-6xl px-5 py-16 md:px-8 md:py-24">
-      <p className="text-sm text-gold-text">PMS</p>
-      <h1 className="mt-3 max-w-3xl text-[32px] font-semibold leading-snug tracking-tight md:text-[48px]">
-        객실 현황 관리, OTA 재고 관리 그리고 모든 것.
-        <br />
-        한 곳에서 더 쉽게 관리하세요.
-      </h1>
-      <div className="mt-12 grid gap-4 md:grid-cols-2">
-        {features.map((item) => (
-          <article key={item.title} className="overflow-hidden rounded-2xl bg-cream">
-            <div className="relative aspect-[16/10] bg-white">
-              <Image
-                src={item.image}
-                alt={item.title}
-                fill
-                className="object-cover object-top"
-                sizes="(min-width: 768px) 40vw, 90vw"
-              />
-            </div>
-            <div className="p-6 md:p-8">
-              <h2 className="text-[22px] font-semibold">{item.title}</h2>
-              <p className="mt-3 leading-7 text-muted">{item.body}</p>
-            </div>
-          </article>
+    <main>
+      <section className="mx-auto max-w-6xl px-5 py-16 md:px-8 md:py-24">
+        <p className="text-sm font-medium tracking-[0.04em] text-gold-text">PMS</p>
+        <h1 className="mt-4 max-w-3xl text-[32px] font-semibold leading-[1.35] tracking-[-0.03em] md:text-[48px]">
+          객실 현황 관리, OTA 재고 관리 그리고 모든 것.
+          <br />
+          한 곳에서 더 쉽게 관리하세요.
+        </h1>
+      </section>
+
+      <div>
+        {features.map((item, index) => (
+          <section
+            key={item.title}
+            className={index % 2 === 0 ? "bg-cream" : "bg-white"}
+          >
+            <Reveal>
+              <div className="mx-auto max-w-6xl px-5 py-14 md:px-8 md:py-20">
+                <p className="text-sm font-medium text-gold-text">
+                  0{index + 1}
+                </p>
+                <h2 className="mt-3 text-[26px] font-semibold tracking-[-0.03em] md:text-[34px]">
+                  {item.title}
+                </h2>
+                <p className="mt-3 max-w-2xl text-[17px] leading-7 text-muted">
+                  {item.body}
+                </p>
+                <div className="mt-8 overflow-hidden rounded-2xl bg-[#ececef] ring-1 ring-black/5">
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    width={1600}
+                    height={1000}
+                    className="h-auto w-full"
+                    sizes="(min-width: 768px) 72rem, 100vw"
+                  />
+                </div>
+              </div>
+            </Reveal>
+          </section>
         ))}
       </div>
-      <section className="mt-12">
-        <h2 className="text-[22px] font-semibold">그외 기능</h2>
-        <ul className="mt-4 grid gap-2 text-muted md:grid-cols-2">
+
+      <section className="mx-auto max-w-6xl px-5 py-16 md:px-8 md:py-24">
+        <h2 className="text-[26px] font-semibold tracking-[-0.03em] md:text-[34px]">
+          그외 기능
+        </h2>
+        <ul className="mt-8 grid gap-4 sm:grid-cols-2">
           {extras.map((item) => (
-            <li key={item}>· {item}</li>
+            <li
+              key={item.title}
+              className="rounded-2xl border border-line bg-cream px-6 py-6"
+            >
+              <p className="text-sm font-medium text-gold-text">{item.no}</p>
+              <p className="mt-2 text-[20px] font-semibold tracking-[-0.02em] md:text-[22px]">
+                {item.title}
+              </p>
+            </li>
           ))}
         </ul>
       </section>
-      <div className="mt-12">
-        <CtaButton>무료로 문의하기</CtaButton>
-      </div>
     </main>
   );
 }

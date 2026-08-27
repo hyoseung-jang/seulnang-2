@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { CtaButton } from "@/components/CtaButton";
+import { Reveal } from "@/components/Reveal";
 import { IMG } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -10,22 +10,34 @@ export const metadata: Metadata = {
 
 const scenarios = [
   {
-    title: "01 상황별 할인",
+    no: "01",
+    title: "상황별 할인",
     desc: "망설이는 손님도 놓치지 않도록. 유동적인 할인으로 고객의 발길을 붙잡아드려요.",
-    guest: "\"7만원은 좀 비싼데.. 나갈까?\"",
-    staff: "\"좋은 방이라 좀 비싸요! 사장님 특별 서비스로 6만원에 드릴게요\"",
+    leftLabel: "손님",
+    left: "7만원은 좀 비싼데.. 나갈까?",
+    rightLabel: "낭만지기",
+    right: "좋은 방이라 좀 비싸요! 사장님 특별 서비스로 6만원에 드릴게요",
+    tone: "light" as const,
   },
   {
-    title: "02 업장별 맞춤 판매 설정",
+    no: "02",
+    title: "업장별 맞춤 판매 설정",
     desc: "금연실부터 에어컨 상태, 우선 판매 객실까지. 업장 방식대로 모두 맞춰드려 운영을 도와요.",
-    guest: "\"2층 방들은 작아서 마지막에 팔아주세요!\"",
-    staff: "\"넵, 사장님께서 원하시는 방식대로 팔아드립니다!\"",
+    leftLabel: "사장님",
+    left: "2층 방들은 작아서 마지막에 팔아주세요!",
+    rightLabel: "낭만지기",
+    right: "넵, 사장님께서 원하시는 방식대로 팔아드립니다!",
+    tone: "dark" as const,
   },
   {
-    title: "03 주차 안내/등록",
+    no: "03",
+    title: "주차 안내/등록",
     desc: "주차 때문에 등 돌리는 손님 없게. 차 번호 수집부터 주차등록, 만차 안내까지 꼼꼼하게",
-    guest: "\"주차장 자리가 하나도 없는데 어떡해요?\"",
-    staff: "\"만차일 경우 X건물 옆에 주차해주시면 됩니다!\"",
+    leftLabel: "손님",
+    left: "주차장 자리가 하나도 없는데 어떡해요?",
+    rightLabel: "낭만지기",
+    right: "만차일 경우 X건물 옆에 주차해주시면 됩니다!",
+    tone: "cream" as const,
   },
 ];
 
@@ -33,28 +45,38 @@ export default function MuinPage() {
   return (
     <main>
       <section className="mx-auto max-w-6xl px-5 py-16 md:px-8 md:py-24">
-        <h1 className="max-w-4xl text-[32px] font-semibold leading-snug tracking-tight md:text-[48px]">
-          밤샘 걱정 없는 사장님의 완벽한 자유를 위해. 슬낭이 사장님 업장에 꼭 맞춰드릴게요.
+        <p className="text-sm font-medium tracking-[0.04em] text-gold-text">
+          무인관제
+        </p>
+        <h1 className="mt-4 max-w-4xl text-[32px] font-semibold leading-[1.35] tracking-[-0.03em] md:text-[48px]">
+          밤샘 걱정 없는 사장님의 완벽한 자유를 위해.
+          <br />
+          슬낭이 사장님 업장에 꼭 맞춰드릴게요.
         </h1>
-        <p className="mt-4 text-sm text-muted">
-          *4개 국어 가능, 5성급 호텔 출신자 포함. 전 인원 모두 호텔 관련 법규가 숙지됨.
+        <p className="mt-5 text-sm leading-6 text-muted">
+          *4개 국어 가능, 5성급 호텔 출신자 포함. 전 인원 모두 호텔 관련 법규가
+          숙지됨.
         </p>
       </section>
 
       <section className="bg-cream px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-6xl">
-          <h2 className="text-[28px] font-semibold md:text-[36px]">
+          <h2 className="text-[28px] font-semibold tracking-[-0.03em] md:text-[36px]">
             슬기로운 낭만지기만의 &lsquo;즉각 선대응&rsquo;
           </h2>
-          <p className="mt-4 max-w-2xl text-[18px] text-muted">
+          <p className="mt-4 max-w-2xl text-[18px] leading-7 text-muted">
             무늬만 무인인 타사 솔루션, 정말 우리 매장을 지켜주고 있습니까?
           </p>
-          <div className="mt-10 grid gap-5 md:grid-cols-2">
+          <div className="mt-10 grid gap-5 md:grid-cols-2 md:items-center">
             <div className="rounded-2xl bg-white p-6 md:p-8">
               <p className="text-sm text-muted">타사</p>
-              <h3 className="mt-3 text-[24px] font-semibold">고객 신호 와야 대응</h3>
+              <h3 className="mt-3 text-[22px] font-medium text-[#5a5a5a] md:text-[24px]">
+                고객 신호 와야 대응
+              </h3>
               <p className="my-3 text-muted">or</p>
-              <h3 className="text-[24px] font-semibold">키오스크 단독</h3>
+              <h3 className="text-[22px] font-medium text-[#5a5a5a] md:text-[24px]">
+                키오스크 단독
+              </h3>
               <ul className="mt-6 space-y-2 text-muted">
                 <li>미성년자 방어 X</li>
                 <li>비품/사용문의 X</li>
@@ -62,18 +84,22 @@ export default function MuinPage() {
                 <li>유동적인 대응 X</li>
               </ul>
             </div>
-            <div className="rounded-2xl bg-ink p-6 text-white md:p-8">
-              <h3 className="text-[22px] font-semibold leading-snug">
-                즉각 선대응 :
-                <br />
-                움직임 감지 신호가 오면 관제 요원이 즉시 고객 응대
-              </h3>
-              <ul className="mt-6 space-y-2 text-gold">
-                <li>직접 신분증 검사</li>
-                <li>사용법 즉시 안내</li>
-                <li>즉시 원격 해결</li>
-                <li>즉석 할인 적용</li>
-              </ul>
+            <div className="relative">
+              <div className="gold-glow absolute -inset-3 rounded-[32px] bg-gold blur-xl" />
+              <div className="relative rounded-[24px] bg-gold p-6 text-ink md:p-8">
+                <p className="text-sm font-semibold">슬기로운 낭만지기</p>
+                <h3 className="mt-3 text-[22px] font-extrabold leading-snug md:text-[26px]">
+                  즉각 선대응 :
+                  <br />
+                  움직임 감지 신호가 오면 관제 요원이 즉시 고객 응대
+                </h3>
+                <ul className="mt-6 space-y-2 font-bold">
+                  <li>직접 신분증 검사</li>
+                  <li>사용법 즉시 안내</li>
+                  <li>즉시 원격 해결</li>
+                  <li>즉석 할인 적용</li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -81,17 +107,75 @@ export default function MuinPage() {
 
       <section className="px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-6xl">
-          <h2 className="max-w-3xl text-[28px] font-semibold leading-snug md:text-[36px]">
-            pms에서 판매할 객실만 선택해주세요. 그 뒤 모든 여정은 저희에게 맡기세요.
+          <h2 className="max-w-3xl text-[28px] font-semibold leading-[1.35] tracking-[-0.03em] md:text-[36px]">
+            pms에서 판매할 객실만 선택해주세요. 그 뒤 모든 여정은 저희에게
+            맡기세요.
           </h2>
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
+          <div className="mt-14 space-y-6">
             {scenarios.map((item) => (
-              <article key={item.title} className="rounded-2xl bg-cream p-6">
-                <h3 className="text-[20px] font-semibold">{item.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-muted">{item.desc}</p>
-                <p className="mt-5 text-[15px]">{item.guest}</p>
-                <p className="mt-2 text-[15px] font-medium text-gold-text">{item.staff}</p>
-              </article>
+              <Reveal key={item.no}>
+                <article
+                  className={`grid gap-8 rounded-[28px] p-6 md:grid-cols-[0.9fr_1.1fr] md:p-10 ${
+                    item.tone === "dark"
+                      ? "bg-ink text-white"
+                      : item.tone === "cream"
+                        ? "bg-cream"
+                        : "bg-[#f6f6f8]"
+                  }`}
+                >
+                  <div>
+                    <p
+                      className={`text-sm font-semibold tracking-[0.08em] ${
+                        item.tone === "dark" ? "text-gold" : "text-gold-text"
+                      }`}
+                    >
+                      {item.no}
+                    </p>
+                    <h3 className="mt-3 text-[24px] font-semibold tracking-[-0.02em] md:text-[28px]">
+                      {item.title}
+                    </h3>
+                    <p
+                      className={`mt-3 text-[16px] leading-7 ${
+                        item.tone === "dark" ? "text-white/65" : "text-muted"
+                      }`}
+                    >
+                      {item.desc}
+                    </p>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <p
+                        className={`mb-2 text-xs ${
+                          item.tone === "dark" ? "text-white/45" : "text-muted"
+                        }`}
+                      >
+                        {item.leftLabel}
+                      </p>
+                      <div
+                        className={`max-w-[92%] rounded-2xl rounded-tl-md px-5 py-4 text-[15px] leading-6 md:text-[16px] ${
+                          item.tone === "dark"
+                            ? "bg-white/10 text-white"
+                            : "bg-white text-ink shadow-sm"
+                        }`}
+                      >
+                        {item.left}
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <p
+                        className={`mb-2 text-xs font-medium ${
+                          item.tone === "dark" ? "text-gold" : "text-gold-text"
+                        }`}
+                      >
+                        {item.rightLabel}
+                      </p>
+                      <div className="max-w-[92%] rounded-2xl rounded-tr-md bg-gold px-5 py-4 text-left text-[15px] font-semibold leading-6 text-ink md:text-[16px]">
+                        {item.right}
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -100,7 +184,7 @@ export default function MuinPage() {
       <section className="bg-ink px-5 py-16 text-white md:px-8 md:py-24">
         <div className="mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-2">
           <div>
-            <h2 className="text-[28px] font-semibold leading-snug md:text-[36px]">
+            <h2 className="text-[28px] font-semibold leading-[1.35] tracking-[-0.03em] md:text-[36px]">
               걱정 마세요. 밤새 일어난 모든 일, 보고서에 다 담았습니다.
             </h2>
             <h3 className="mt-6 text-[22px] font-semibold">업장 맞춤 운영 보고서</h3>
@@ -119,11 +203,14 @@ export default function MuinPage() {
         </div>
       </section>
 
-      <section className="px-5 py-16 text-center md:px-8 md:py-24">
-        <CtaButton>무료로 문의하기</CtaButton>
-        <p className="mt-6 text-muted">
+      <section className="px-5 py-20 text-center md:px-8 md:py-28">
+        <p className="text-sm font-medium tracking-[0.08em] text-gold-text">
+          설치
+        </p>
+        <p className="mt-4 text-[28px] font-semibold leading-[1.4] tracking-[-0.03em] md:text-[40px]">
           당장 내일, 단 하루면 설치 가능합니다.
-          <br />
+        </p>
+        <p className="mt-4 text-[18px] leading-7 text-muted md:text-[20px]">
           지금 문의하고 무인 운영의 여유를 누려보세요.
         </p>
       </section>

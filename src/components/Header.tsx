@@ -1,9 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { COMPANY, IMG, LINKS } from "@/lib/site";
+import { COMPANY, LINKS } from "@/lib/site";
 
 const products = [
   { href: LINKS.pms, label: "PMS" },
@@ -18,15 +17,11 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-black/5 bg-white/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 md:h-[72px] md:px-8">
-        <Link href={LINKS.home} className="relative h-11 w-[132px] shrink-0">
-          <Image
-            src={IMG.logo}
-            alt={COMPANY.name}
-            fill
-            className="object-contain object-left"
-            sizes="132px"
-            priority
-          />
+        <Link
+          href={LINKS.home}
+          className="shrink-0 text-[16px] font-semibold tracking-[-0.03em] text-ink md:text-[17px]"
+        >
+          슬기로운 낭만지기
         </Link>
 
         <nav className="hidden items-center gap-7 text-[15px] text-ink md:flex">
@@ -35,7 +30,10 @@ export function Header() {
             onMouseEnter={() => setProductsOpen(true)}
             onMouseLeave={() => setProductsOpen(false)}
           >
-            <button type="button" className="inline-flex items-center gap-1">
+            <button
+              type="button"
+              className="inline-flex items-center gap-1 transition hover:text-ink/70"
+            >
               제품 소개
               <span className="text-[10px]">▾</span>
             </button>
@@ -45,7 +43,7 @@ export function Header() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="block px-4 py-2.5 hover:bg-cream"
+                    className="block px-4 py-2.5 transition hover:bg-cream"
                   >
                     {item.label}
                   </Link>
@@ -53,17 +51,29 @@ export function Header() {
               </div>
             ) : null}
           </div>
-          <Link href={LINKS.faq}>FAQ</Link>
-          <a href={LINKS.blog} target="_blank" rel="noreferrer">
+          <Link
+            href={LINKS.faq}
+            className="transition hover:text-ink/70"
+          >
+            FAQ
+          </Link>
+          <a
+            href={LINKS.blog}
+            target="_blank"
+            rel="noreferrer"
+            className="transition hover:text-ink/70"
+          >
             블로그
           </a>
-          <Link href={LINKS.about}>회사 소개</Link>
+          <Link href={LINKS.about} className="transition hover:text-ink/70">
+            회사 소개
+          </Link>
           <a href={LINKS.tel} className="font-medium">
             {COMPANY.phone}
           </a>
           <Link
             href={LINKS.contact}
-            className="rounded-[14px] bg-brown px-4 py-2 text-sm text-white"
+            className="rounded-[14px] bg-brown px-4 py-2 text-sm text-white transition hover:bg-ink"
           >
             무료 문의
           </Link>

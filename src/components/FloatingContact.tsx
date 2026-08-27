@@ -6,7 +6,7 @@ export function FloatingContact() {
       href={LINKS.kakao}
       target="_blank"
       rel="noreferrer"
-      className="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-kakao px-4 py-3 text-sm font-semibold text-[#392020] shadow-lg md:bottom-8 md:right-8"
+      className="fixed bottom-20 right-4 z-50 inline-flex items-center rounded-full bg-kakao px-3.5 py-2.5 text-[13px] font-semibold text-[#392020] shadow-lg md:bottom-8 md:right-8 md:px-4 md:py-3 md:text-sm"
     >
       간편 문의
     </a>

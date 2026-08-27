@@ -1,78 +1,99 @@
 "use client";
 
-import { useState } from "react";
-import { COMPANY, LINKS } from "@/lib/site";
+import { useActionState } from "react";
+import { submitInquiry, type InquiryState } from "@/lib/submit-inquiry";
+
+const fieldClass =
+  "mt-2 w-full rounded-md border border-[#d8d8d8] bg-white px-4 py-3 text-[15px] outline-none placeholder:text-[#b3b3b3] focus:border-gold-deep";
+
+const sources = [
+  "네이버 검색",
+  "네이버 블로그",
+  "인스타그램",
+  "유튜브",
+  "지인 소개",
+  "기존 고객 소개",
+  "기타",
+];
 
 export function ContactForm() {
-  const [sent, setSent] = useState(false);
+  const [state, formAction, pending] = useActionState<InquiryState, FormData>(
+    submitInquiry,
+    null,
+  );
+
+  if (state?.ok) {
+    return <p className="mt-10 text-center text-[17px] leading-7">{state.message}</p>;
+  }
 
   return (
-    <div className="rounded-2xl bg-cream p-6 md:p-8">
-      {sent ? (
-        <p className="text-[18px] leading-7">
-          문의가 접수되었습니다. 3일 이내에 작성해주신 연락처로 연락드리겠습니다.
-        </p>
-      ) : (
-        <form
-          className="space-y-4"
-          onSubmit={(event) => {
-            event.preventDefault();
-            setSent(true);
-          }}
-        >
-          <label className="block">
-            <span className="mb-2 block text-sm">이름</span>
-            <input
-              required
-              name="name"
-              className="w-full rounded-xl border border-line bg-white px-4 py-3 outline-none focus:border-gold-deep"
-            />
-          </label>
-          <label className="block">
-            <span className="mb-2 block text-sm">연락처</span>
-            <input
-              required
-              name="phone"
-              type="tel"
-              className="w-full rounded-xl border border-line bg-white px-4 py-3 outline-none focus:border-gold-deep"
-            />
-          </label>
-          <label className="block">
-            <span className="mb-2 block text-sm">업소명</span>
-            <input
-              required
-              name="store"
-              className="w-full rounded-xl border border-line bg-white px-4 py-3 outline-none focus:border-gold-deep"
-            />
-          </label>
-          <button
-            type="submit"
-            className="mt-2 w-full rounded-[14px] bg-brown py-4 font-medium text-white"
-          >
-            무료 상담 신청
-          </button>
-        </form>
-      )}
-      <p className="mt-6 text-xs leading-5 text-muted">
-        슬기로운 낭만지기(이하 “회사”)는 이용자의 개인정보를 보호하며 관련 법령을
-        준수합니다.
-        <br />
-        수집 항목 : 이름, 연락처, 업소명
-        <br />
-        수집 목적 : 문의 상담 및 서비스 안내, 도입 상담 진행
-        <br />
-        보관 기간 : 상담 종료 후 파기
-        <br />
-        문의 : {COMPANY.contactEmail}
-      </p>
-      <a
-        href={LINKS.kakao}
-        target="_blank"
-        rel="noreferrer"
-        className="mt-4 inline-flex rounded-lg bg-kakao px-4 py-2 text-sm font-medium text-[#392020]"
+    <form action={formAction} className="mt-10 space-y-6">
+      <label className="block">
+        <span className="text-[15px]">
+          1. 업장명 <span className="text-[#e11d2e]">*</span>
+        </span>
+        <input
+          required
+          name="store"
+          placeholder="예) 브라운도트"
+          className={fieldClass}
+        />
+      </label>
+      <label className="block">
+        <span className="text-[15px]">
+          2. 업장 지역 <span className="text-[#e11d2e]">*</span>
+        </span>
+        <input
+          required
+          name="region"
+          placeholder="예) 인천 남동구 구월동"
+          className={fieldClass}
+        />
+      </label>
+      <label className="block">
+        <span className="text-[15px]">
+          3. 연락처 <span className="text-[#e11d2e]">*</span>
+        </span>
+        <input
+          required
+          name="phone"
+          type="tel"
+          placeholder="010-1234-5678"
+          className={fieldClass}
+        />
+      </label>
+      <label className="block">
+        <span className="text-[15px]">4. 상담 내용(선택)</span>
+        <textarea
+          name="message"
+          rows={5}
+          placeholder="궁금하신 내용을 남겨주세요."
+          className={`${fieldClass} min-h-[140px] resize-y`}
+        />
+      </label>
+      <label className="block">
+        <span className="text-[15px]">5. 알게된 경로(선택)</span>
+        <select name="source" defaultValue="" className={`${fieldClass} text-[#111]`}>
+          <option value="" disabled>
+            선택해주세요
+          </option>
+          {sources.map((item) => (
+            <option key={item} value={item}>
+              {item}
+            </option>
+          ))}
+        </select>
+      </label>
+      {state && !state.ok ? (
+        <p className="text-center text-sm text-[#e11d2e]">{state.message}</p>
+      ) : null}
+      <button
+        type="submit"
+        disabled={pending}
+        className="w-full rounded-md bg-gold-bright py-4 text-[17px] font-semibold text-black disabled:opacity-60"
       >
-        카톡 문의
-      </a>
-    </div>
+        {pending ? "보내는 중..." : "상담 요청하기"}
+      </button>
+    </form>
   );
 }

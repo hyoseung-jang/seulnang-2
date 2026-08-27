@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { COMPANY, LINKS } from "@/lib/site";
 
 export function Footer() {
@@ -25,13 +24,6 @@ export function Footer() {
           >
             간편 문의
           </a>
-          <Link
-            href={LINKS.contact}
-            className="inline-flex w-fit items-center gap-2 rounded-[14px] bg-gold px-5 py-3 font-medium"
-          >
-            우리 업장 맞춤 상담받기
-            <span className="grid h-6 w-6 place-items-center rounded-full bg-white text-sm">↗</span>
-          </Link>
         </div>
       </div>
     </footer>

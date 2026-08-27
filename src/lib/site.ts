@@ -8,6 +8,13 @@ export const IMG = {
   pmsInventory: "/images/pms/Inventory-Management.png",
   pmsReservation: "/images/pms/date-reservation.png",
   pmsHousekeeping: "/images/pms/housekeeping.png",
+  elevatorKiosk: "/images/kiosk/elevator.png",
+  supplyLocker: "/images/kiosk/supply-locker-only.png",
+  appInquiry: "/images/kiosk/app-inquiry.png",
+  appControl: "/images/kiosk/app-control.png",
+  appLog1: "/images/kiosk/app-log-pay.png",
+  appLog2: "/images/kiosk/app-log-need.png",
+  appLog3: "/images/kiosk/app-log-check.png",
   report:
     "https://framerusercontent.com/images/knQp7ttYZh71nMGy1L0OSGOyZx0.png?width=1666&height=1111",
   compare:
@@ -37,6 +44,7 @@ export const COMPANY = {
   phone: "1551-6783",
   email: "info@rosegoldsoftware.co.kr",
   contactEmail: "seulnang.mkt@gmail.com",
+  inquiryTo: ["rose5084gold@gmail.com", "gytmd1119@naver.com"] as const,
   ceo: "김연수",
   bizNo: "719-88-02911",
   address: "경기도 안산시 상록구 한양대학로 60 401호",
@@ -50,10 +58,6 @@ export const HOTEL_LOGOS = [
   { name: "뉴캐슬 호텔", src: "/images/home/newcastle.png" },
   { name: "저스트 슬립 호텔", src: "/images/home/justsleep.png" },
   { name: "리베 호텔", src: "/images/home/labe.png" },
-  {
-    name: "에로스 호텔",
-    src: "https://framerusercontent.com/images/wMsHlwQKBn0ERxmqtYSpyTGxEY.png?width=2563&height=840",
-  },
   { name: "에이치에비뉴 호텔", src: "/images/home/havenue.png" },
   { name: "도노 호텔", src: "/images/home/dono.png" },
   {

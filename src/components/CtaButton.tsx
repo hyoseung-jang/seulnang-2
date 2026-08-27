@@ -20,7 +20,7 @@ export function CtaButton({
   return (
     <Link
       href={href}
-      className={`inline-flex items-center gap-3 rounded-[14px] px-6 py-4 text-[15px] font-medium ${styles}`}
+      className={`inline-flex items-center gap-3 rounded-[14px] px-6 py-4 text-[15px] font-medium transition duration-200 hover:brightness-105 ${styles}`}
     >
       {children}
       <span className="grid h-7 w-7 place-items-center rounded-full bg-white text-ink">↗</span>

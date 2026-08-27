@@ -1,14 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_KR } from "next/font/google";
+import { Suspense } from "react";
 import { Footer } from "@/components/Footer";
 import { FloatingContact } from "@/components/FloatingContact";
 import { Header } from "@/components/Header";
+import { StickyCta } from "@/components/StickyCta";
 import { COMPANY } from "@/lib/site";
 import "./globals.css";
 
 const notoSansKr = Noto_Sans_KR({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
   variable: "--font-noto-sans-kr",
   display: "swap",
 });
@@ -26,11 +28,14 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ko" className={notoSansKr.variable}>
-      <body className="min-h-dvh bg-white font-sans antialiased">
+    <html lang="ko" className={notoSansKr.variable} data-scroll-behavior="smooth">
+      <body className="min-h-dvh bg-white pb-28 font-sans antialiased">
         <Header />
         {children}
         <Footer />
+        <Suspense>
+          <StickyCta />
+        </Suspense>
         <FloatingContact />
       </body>
     </html>
