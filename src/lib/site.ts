@@ -43,8 +43,6 @@ export const COMPANY = {
   legal: "(주) 슬기로운 낭만지기",
   phone: "1551-6783",
   email: "info@rosegoldsoftware.co.kr",
-  contactEmail: "seulnang.mkt@gmail.com",
-  inquiryTo: ["rose5084gold@gmail.com", "gytmd1119@naver.com"] as const,
   ceo: "김연수",
   bizNo: "719-88-02911",
   address: "경기도 안산시 상록구 한양대학로 60 401호",

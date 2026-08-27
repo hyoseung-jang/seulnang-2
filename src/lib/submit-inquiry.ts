@@ -13,6 +13,28 @@ const SMTP_HOST = process.env.SMTP_HOST ?? "smtp.worksmobile.com";
 const SMTP_PORT = Number(process.env.SMTP_PORT ?? 465);
 const SMTP_USER = process.env.SMTP_USER ?? "biz@rosegoldsoftware.co.kr";
 
+// 수신 주소는 이 파일("use server")에서만 읽는다. site.ts 는 클라이언트
+// 컴포넌트도 import 하므로 거기에 두면 공개 JS 번들로 그대로 새어 나간다.
+// 운영 중 수신자 변경은 Vercel 환경변수 INQUIRY_TO(쉼표 구분)로 한다.
+const DEFAULT_INQUIRY_TO = [
+  "rose5084gold@gmail.com",
+  "gytmd1119@naver.com",
+  "biz@rosegoldsoftware.co.kr",
+];
+
+function inquiryRecipients() {
+  const configured = (process.env.INQUIRY_TO ?? "")
+    .split(",")
+    .map((address) => address.trim())
+    .filter((address) => address.includes("@"));
+
+  if (configured.length > 0) return configured;
+
+  // 환경변수가 비었거나 형식이 깨져도 문의가 유실되지 않도록 기본값으로 보낸다.
+  console.warn("[inquiry] INQUIRY_TO 가 비어 있어 기본 수신처로 발송합니다.");
+  return DEFAULT_INQUIRY_TO;
+}
+
 function textOf(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
 }
@@ -62,7 +84,7 @@ export async function submitInquiry(
     await transporter.sendMail({
       // 발신 주소는 인증 계정과 같아야 네이버웍스가 거부하지 않는다.
       from: { name: COMPANY.name, address: SMTP_USER },
-      to: [...COMPANY.inquiryTo],
+      to: inquiryRecipients(),
       subject: `[상담 요청] ${store}`,
       text: body,
     });
