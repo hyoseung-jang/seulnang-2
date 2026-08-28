@@ -24,6 +24,12 @@ export function Footer() {
           >
             간편 문의
           </a>
+          <a
+            href="/privacy"
+            className="w-fit font-medium text-muted underline underline-offset-4"
+          >
+            개인정보처리방침
+          </a>
         </div>
       </div>
     </footer>
