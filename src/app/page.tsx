@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { IconFlex, IconRest, IconSave } from "@/components/BenefitIcons";
@@ -5,7 +6,23 @@ import { FaqList } from "@/components/FaqList";
 import { LogoMarquee } from "@/components/LogoMarquee";
 import { Reveal } from "@/components/Reveal";
 import { ReviewMarquee } from "@/components/ReviewMarquee";
-import { IMG, LINKS } from "@/lib/site";
+import { jsonLdString } from "@/lib/jsonld";
+import { FAQS, IMG, LINKS } from "@/lib/site";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
+
+/* FAQ JSON-LD — 화면에 렌더되는 FAQS 상수를 그대로 직렬화한다 (가시 텍스트와 100% 동일 보장) */
+const FAQ_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQS.map(({ q, a }) => ({
+    "@type": "Question",
+    name: q,
+    acceptedAnswer: { "@type": "Answer", text: a },
+  })),
+};
 
 const cases = [
   {
@@ -475,6 +492,10 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdString(FAQ_JSONLD) }}
+      />
     </main>
   );
 }

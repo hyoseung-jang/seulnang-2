@@ -4,6 +4,7 @@ import { Reveal } from "@/components/Reveal";
 import { IMG } from "@/lib/site";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/pms" },
   title: "PMS | 슬기로운 낭만지기",
   description: "객실 현황 관리, OTA 재고 관리 그리고 모든 것. 한 곳에서 더 쉽게 관리하세요.",
 };

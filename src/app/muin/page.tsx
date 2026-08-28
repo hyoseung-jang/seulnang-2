@@ -4,6 +4,7 @@ import { Reveal } from "@/components/Reveal";
 import { IMG } from "@/lib/site";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/muin" },
   title: "국내유일 즉각 선대응 무인관제 | 슬기로운 낭만지기",
   description: "밤샘 걱정 없는 사장님의 완벽한 자유를 위해. 슬낭이 사장님 업장에 꼭 맞춰드립니다.",
 };

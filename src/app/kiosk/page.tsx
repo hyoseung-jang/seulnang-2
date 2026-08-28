@@ -4,6 +4,7 @@ import { Reveal } from "@/components/Reveal";
 import { IMG } from "@/lib/site";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/kiosk" },
   title: "거품 없는 중소형 호텔 맞춤 키오스크 | 슬기로운 낭만지기",
   description:
     "기계값 거품은 빼고 기능은 꽉 채웠습니다. 30cm 소형 사이즈로 좁은 프런트에도 딱 맞는 키오스크.",

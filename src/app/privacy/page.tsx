@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   description:
     COMPANY.legal +
     "의 개인정보처리방침입니다. 수집 항목, 이용 목적, 보유 기간, 제3자 제공, 정보주체의 권리, Google 사용자 데이터 처리 방침을 안내합니다.",
+  alternates: { canonical: "/privacy" },
 };
 
 type Section = { title: string; body: string[] };

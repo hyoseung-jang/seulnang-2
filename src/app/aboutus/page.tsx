@@ -3,6 +3,7 @@ import Image from "next/image";
 import { IMG } from "@/lib/site";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/aboutus" },
   title: "회사 소개 | 슬기로운 낭만지기",
   description: "사장님의 낭만을 위해, 우리는 지기가 되기로 했습니다.",
 };
