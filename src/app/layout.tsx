@@ -1,10 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_KR } from "next/font/google";
-import { Suspense } from "react";
-import { Footer } from "@/components/Footer";
-import { FloatingContact } from "@/components/FloatingContact";
-import { Header } from "@/components/Header";
-import { StickyCta } from "@/components/StickyCta";
 import { COMPANY } from "@/lib/site";
 import { jsonLdString } from "@/lib/jsonld";
 import "./globals.css";
@@ -80,7 +75,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ko" className={notoSansKr.variable} data-scroll-behavior="smooth">
-      <body className="min-h-dvh bg-white pb-28 font-sans antialiased">
+      <body className="min-h-dvh bg-white font-sans antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: jsonLdString(ORGANIZATION_JSONLD) }}
@@ -89,13 +84,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: jsonLdString(WEBSITE_JSONLD) }}
         />
-        <Header />
         {children}
-        <Footer />
-        <Suspense>
-          <StickyCta />
-        </Suspense>
-        <FloatingContact />
       </body>
     </html>
   );

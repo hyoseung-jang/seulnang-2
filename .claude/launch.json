@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000
+    },
+    {
+      "name": "dev-no-mail",
+      "runtimeExecutable": "env",
+      "runtimeArgs": ["SMTP_PASSWORD=", "npm", "run", "dev"],
+      "port": 3000
+    }
+  ]
+}

@@ -22,6 +22,19 @@ npm run dev
 | `SMTP_HOST` | | `smtp.worksmobile.com` | |
 | `SMTP_PORT` | | `465` | 465는 SSL, 587은 STARTTLS로 동작한다. |
 | `SMTP_USER` | | `biz@rosegoldsoftware.co.kr` | 발신 주소로도 쓰인다. 네이버웍스는 인증 계정과 다른 From 을 거부하므로 바꿀 때 주의. |
+| `ANALYTICS_BRIDGE_URL` | | - | 방문/전환 분석 저장소(ota-server 브리지). `https://api-ota.rosegoldsoftware.co.kr/seulnang`. 없으면 추적만 조용히 꺼진다. |
+| `ANALYTICS_BRIDGE_TOKEN` | | - | 브리지 Bearer 토큰. ota-server `/root/seulnang-analytics/.env` 의 `API_TOKEN` 과 같아야 한다. |
+| `ANALYTICS_IP_SALT` | | - | 방문자 IP 해시용 솔트(임의 문자열). |
+| `ADMIN_PASSWORD` | | - | `/admin` 방문·문의 분석 대시보드 로그인 비밀번호. |
+
+## 방문/전환 추적과 관리자 대시보드
+
+- 추적기는 `src/instrumentation-client.ts` → `src/lib/tracker.ts`. 같은 도메인 `/api/e` 로
+  sendBeacon 하고, Vercel 라우트가 ota-server 의 MySQL 브리지로 저장한다.
+  백엔드 구성과 배포 방법은 [analytics-server/README.md](analytics-server/README.md) 참고.
+- 채널 분류(네이버 검색/블로그/광고, 구글, 인스타그램 등)는 `src/lib/analytics/channel.ts`.
+- 문의 전환은 `submit-inquiry.ts` 가 메일 성패와 무관하게 DB 에 기록한다.
+- 대시보드는 `/admin` (개요·채널·페이지·문의). 비밀번호는 `ADMIN_PASSWORD`.
 
 로컬에서는 `.env.local` 에 `SMTP_PASSWORD` 를 넣는다. macOS 키체인에 등록해 두었다면:
 

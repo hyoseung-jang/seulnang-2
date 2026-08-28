@@ -1,6 +1,7 @@
 "use server";
 
 import nodemailer from "nodemailer";
+import { recordInquiry } from "@/lib/analytics/record-inquiry";
 import { COMPANY } from "@/lib/site";
 
 export type InquiryState = {
@@ -53,9 +54,22 @@ export async function submitInquiry(
     return { ok: false, message: "필수 항목을 입력해 주세요." };
   }
 
+  // 전환(문의) 기록 — 메일 성패와 무관하게 리드는 DB 에 남긴다.
+  // 기록 실패가 문의 접수를 막아서는 안 되므로 항상 삼켜서 로그만 남긴다.
+  const record = (mailSent: boolean) =>
+    recordInquiry({
+      store,
+      region,
+      phone,
+      message,
+      selfSource: source,
+      mailSent,
+    }).catch((error) => console.error("[inquiry] 전환 기록 실패", error));
+
   const password = process.env.SMTP_PASSWORD;
   if (!password) {
     console.error("[inquiry] SMTP_PASSWORD 가 설정되어 있지 않습니다.");
+    await record(false);
     return {
       ok: false,
       message: "메일 발송 설정이 되어 있지 않습니다. 잠시 후 다시 시도해 주세요.",
@@ -90,8 +104,12 @@ export async function submitInquiry(
     });
   } catch (error) {
     console.error("[inquiry] 메일 발송 실패", error);
+    // 메일이 실패해도 리드가 유실되지 않도록 기록한다(대시보드에서 mail_sent=0 으로 표시).
+    await record(false);
     return { ok: false, message: "문의 전송에 실패했습니다. 잠시 후 다시 시도해 주세요." };
   }
+
+  await record(true);
 
   return {
     ok: true,

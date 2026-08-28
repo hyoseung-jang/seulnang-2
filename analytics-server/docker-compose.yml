@@ -1,0 +1,54 @@
+# seulnang.co.kr 방문 분석 백엔드. call-stats-backend 와 같은 구성 원칙을 따른다:
+#  - DB 포트는 호스트로 공개하지 않는다(ACG 가 22/80/443 만 열어 의미도 없고, 열면 노출).
+#  - 기존 ota_nginx(80/443)가 /seulnang/ 경로를 이 백엔드로 넘긴다.
+#  - ota-backend_default 외부 네트워크에 붙는다. 서비스 이름을 db 로 두면
+#    같은 네트워크의 ota_mysql(별칭 db)과 DNS 가 갈리므로 반드시 고유 이름을 쓴다.
+services:
+  seulnang_db:
+    image: mysql:8.0
+    container_name: seulnang_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME:-seulnang_analytics}
+      MYSQL_USER: ${DB_USER:-seulnang}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      TZ: Asia/Seoul
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      # 서버 타임존을 KST 로 고정. 브리지도 +09:00 으로 접속해 datetime 왕복이 일관된다.
+      - --default-time-zone=+09:00
+    volumes:
+      - seulnang_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-p${DB_ROOT_PASSWORD}']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # 컨테이너 이름 = nginx 가 proxy_pass 에 쓰는 이름.
+  seulnang_analytics:
+    build: .
+    container_name: seulnang_analytics
+    restart: unless-stopped
+    stop_grace_period: 30s
+    environment:
+      PORT: 3000
+      DB_HOST: seulnang_mysql
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-seulnang_analytics}
+      DB_USER: ${DB_USER:-seulnang}
+      DB_PASSWORD: ${DB_PASSWORD}
+      API_TOKEN: ${API_TOKEN}
+    depends_on:
+      seulnang_db:
+        condition: service_healthy
+
+volumes:
+  seulnang_mysql_data:
+
+networks:
+  default:
+    name: ota-backend_default
+    external: true

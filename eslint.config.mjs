@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // ota-server 에 배포되는 별도 Node(CommonJS) 서비스 — 웹사이트 린트 대상이 아니다.
+    "analytics-server/**",
   ]),
 ]);
 
