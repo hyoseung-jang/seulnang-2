@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { fireLeadConversion } from "@/lib/marketing";
 import { submitInquiry, type InquiryState } from "@/lib/submit-inquiry";
 
 const fieldClass =
@@ -21,6 +22,12 @@ export function ContactForm() {
     submitInquiry,
     null,
   );
+
+  // 문의 접수 성공 = 전환. 광고 플랫폼(메타/GA4/네이버)에 전환 신호를 보낸다.
+  const succeeded = state?.ok === true;
+  useEffect(() => {
+    if (succeeded) fireLeadConversion();
+  }, [succeeded]);
 
   if (state?.ok) {
     return <p className="mt-10 text-center text-[17px] leading-7">{state.message}</p>;

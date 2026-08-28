@@ -3,11 +3,13 @@ import { Suspense } from "react";
 import { Footer } from "@/components/Footer";
 import { FloatingContact } from "@/components/FloatingContact";
 import { Header } from "@/components/Header";
+import { MarketingTags } from "@/components/MarketingTags";
 import { StickyCta } from "@/components/StickyCta";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-dvh pb-28">
+      <MarketingTags />
       <Header />
       {children}
       <Footer />

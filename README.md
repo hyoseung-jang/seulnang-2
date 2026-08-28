@@ -27,6 +27,21 @@ npm run dev
 | `ANALYTICS_IP_SALT` | | - | 방문자 IP 해시용 솔트(임의 문자열). |
 | `ADMIN_PASSWORD` | | - | `/admin` 방문·문의 분석 대시보드 로그인 비밀번호. |
 
+## 광고 플랫폼 태그 (서드파티)
+
+Framer → Next.js 이전 때 누락됐다가 복구한 태그들. `src/lib/marketing.ts` 에 ID,
+`src/components/MarketingTags.tsx` 에 로더가 있고 공개 사이트에만 붙는다(/admin 제외).
+문의 접수 성공 시 `fireLeadConversion()` 이 메타 Lead·GA4 generate_lead·네이버
+전환(유형 4)을 쏜다.
+
+| 태그 | ID | 상태 |
+| --- | --- | --- |
+| GA4 | `G-6W8XFQYFFJ` | 동작 |
+| 메타 픽셀 | `1741723013728749` | 동작 (PageView + ViewContent + Lead) |
+| 네이버 전환추적 | `s_1d43ce56f7ab` | 동작 (공통 + 전환 유형 4) |
+| 구글 애즈 전환 | 미설정 | `marketing.ts` 의 `GOOGLE_ADS_ID`/`GOOGLE_ADS_LEAD_LABEL` 을 채우면 활성화. 그 전에는 애즈에서 GA4 generate_lead 를 전환으로 가져오면 된다. |
+| 카카오 픽셀 | 미설정 | ID 확인 후 필요 시 추가 |
+
 ## 방문/전환 추적과 관리자 대시보드
 
 - 추적기는 `src/instrumentation-client.ts` → `src/lib/tracker.ts`. 같은 도메인 `/api/e` 로
