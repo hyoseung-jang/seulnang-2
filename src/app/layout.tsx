@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Noto_Sans_KR } from "next/font/google";
+import { Noto_Sans_KR, Noto_Serif_KR } from "next/font/google";
 import { COMPANY } from "@/lib/site";
 import { jsonLdString } from "@/lib/jsonld";
 import "./globals.css";
@@ -11,23 +11,31 @@ const notoSansKr = Noto_Sans_KR({
   display: "swap",
 });
 
+/* 디스플레이 서체 — 감성 헤드라인 전용(호텔 브랜드 톤). 본문에는 쓰지 않는다. */
+const notoSerifKr = Noto_Serif_KR({
+  subsets: ["latin"],
+  weight: ["600", "700", "900"],
+  variable: "--font-noto-serif-kr",
+  display: "swap",
+});
+
 const SITE_URL = "https://seulnang.co.kr";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: `${COMPANY.name} : 무인 관제의 혁신, 차원이 다른 선대응 무인관제`,
+  title: `${COMPANY.name} | 키오스크와 관제를 하나로`,
   description:
-    "중소형 모텔/호텔 무인관제. 호출벨 뒤가 아니라, 움직임이 감지되는 순간 선대응하는 슬낭의 관제.",
+    "키오스크만으로 해결되지 않는 고객 응대까지. 중소형 모텔과 호텔을 위한 키오스크, 선대응 관제, PMS 통합 운영 시스템.",
   robots: { index: true, follow: true },
   openGraph: {
     type: "website",
     locale: "ko_KR",
     url: SITE_URL,
     siteName: COMPANY.name,
-    title: `${COMPANY.name} : 무인 관제의 혁신, 차원이 다른 선대응 무인관제`,
+    title: `${COMPANY.name} | 키오스크와 관제를 하나로`,
     description:
-      "중소형 모텔/호텔 무인관제. 호출벨 뒤가 아니라, 움직임이 감지되는 순간 선대응하는 슬낭의 관제.",
-    images: [{ url: "/images/home/first-photo.png", width: 1480, height: 909, alt: "슬기로운 낭만지기 무인 관제" }],
+      "키오스크만으로 해결되지 않는 고객 응대까지. 키오스크와 선대응 관제를 하나로 연결합니다.",
+    images: [{ url: "/images/home/hero-lobby-poster.jpg", width: 1920, height: 1080, alt: "슬기로운 낭만지기 무인 키오스크가 지키는 호텔 로비" }],
   },
   twitter: { card: "summary_large_image" },
 };
@@ -74,7 +82,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ko" className={notoSansKr.variable} data-scroll-behavior="smooth">
+    <html
+      lang="ko"
+      className={`${notoSansKr.variable} ${notoSerifKr.variable}`}
+      data-scroll-behavior="smooth"
+    >
       <body className="min-h-dvh bg-white font-sans antialiased">
         <script
           type="application/ld+json"

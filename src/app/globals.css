@@ -2,13 +2,16 @@
 
 @theme inline {
   --font-sans: var(--font-noto-sans-kr), sans-serif;
+  --font-display: var(--font-noto-serif-kr), "Noto Serif KR", serif;
   --color-brown: #2e1504;
   --color-gold: #ffe28a;
   --color-gold-bright: #ffe24d;
   --color-gold-deep: #ffbf00;
-  --color-gold-text: #c79500;
+  --color-gold-text: #a16207;
   --color-navy: #04042e;
   --color-ink: #12122b;
+  --color-ink-2: #1b1b3d;
+  --color-night: #0c0c18;
   --color-cream: #fffbf0;
   --color-orange: #ff6a00;
   --color-kakao: #fee500;
@@ -23,8 +26,28 @@ html {
 body {
   background: #fff;
   color: #111;
+  /* 한국어 조사·어미가 어절 중간에서 끊기지 않게 */
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
+::selection {
+  background: var(--color-gold-bright);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-gold-deep);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── 숫자 표기: 통계·가격은 폭이 흔들리지 않게 ─────────────────── */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 마퀴 ──────────────────────────────────────────────────────── */
 @keyframes marquee {
   from {
     transform: translateX(0);
@@ -34,6 +57,40 @@ body {
   }
 }
 
+.animate-marquee {
+  animation: marquee 32s linear infinite;
+}
+
+.animate-marquee-slow {
+  animation: marquee 48s linear infinite;
+}
+
+.animate-marquee-slower {
+  animation: marquee 56s linear infinite;
+}
+
+.marquee-reverse {
+  animation-direction: reverse;
+}
+
+.marquee-pause:hover .animate-marquee,
+.marquee-pause:hover .animate-marquee-slow,
+.marquee-pause:hover .animate-marquee-slower {
+  animation-play-state: paused;
+}
+
+/* 마퀴 좌우 가장자리를 부드럽게 지워 흐름을 자연스럽게 */
+.marquee-mask {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+}
+
+/* ── 골드 글로우(주변光) ───────────────────────────────────────── */
 @keyframes gold-pulse {
   0%,
   100% {
@@ -46,24 +103,15 @@ body {
   }
 }
 
-.animate-marquee {
-  animation: marquee 32s linear infinite;
-}
-
-.animate-marquee-slow {
-  animation: marquee 48s linear infinite;
-}
-
 .gold-glow {
   animation: gold-pulse 3.6s ease-in-out infinite;
 }
 
+/* ── 스크롤 리빌(기존 Reveal 컴포넌트가 사용) ──────────────────── */
 .reveal {
-  opacity: 0;
-  transform: translateY(18px);
-  transition:
-    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  opacity: 1;
+  transform: translateY(22px);
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .reveal-on {
@@ -71,10 +119,231 @@ body {
   transform: none;
 }
 
+/* ── 히어로 로드 시퀀스: JS 없이 CSS 애니메이션으로 무대 연출 ──── */
+@keyframes stage-up {
+  from {
+    opacity: 1;
+    transform: translateY(26px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.stage {
+  opacity: 1;
+  animation: stage-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+
+/* ── 라이브 관제 카드 ──────────────────────────────────────────── */
+@keyframes live-dot {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 9px rgba(74, 222, 128, 0);
+  }
+}
+
+.live-dot {
+  animation: live-dot 2s ease-out infinite;
+}
+
+@keyframes feed-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.feed-in {
+  animation: feed-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes typing-dot {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+.typing-dot {
+  animation: typing-dot 1.2s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* ── 다크 섹션 앰비언트: 느리게 흐르는 금빛 오로라 ─────────────── */
+@keyframes aurora-drift {
+  0%,
+  100% {
+    transform: translate3d(-6%, 0, 0) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate3d(6%, -4%, 0) scale(1.12);
+    opacity: 0.8;
+  }
+}
+
+.aurora {
+  animation: aurora-drift 14s ease-in-out infinite;
+}
+
+/* 떠 있는 오브젝트(앱 폰 목업 등) */
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+.float-y {
+  animation: float-y 6s ease-in-out infinite;
+}
+
+/* ── PMS 쇼케이스: 자동 순환 진행바 ────────────────────────────── */
+@keyframes pms-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.pms-progress {
+  transform: scaleX(0);
+}
+
+.pms-progress-run {
+  animation: pms-progress 5s linear both;
+}
+
+/* ── FAQ 아코디언: grid-rows 트릭으로 높이 트랜지션 ────────────── */
+.faq-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.faq-panel[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+
+.faq-panel > div {
+  overflow: hidden;
+}
+
+/* ── 원클릭 데모: 활성화 시 펼쳐지는 패널(FAQ 와 같은 트릭) ────── */
+.grow-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.grow-panel[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+
+.grow-panel > div {
+  overflow: hidden;
+}
+
+/* 슬라이더 라벨: 은은한 빛 스윕 */
+@keyframes shimmer-sweep {
+  from {
+    background-position: 160% 0;
+  }
+  to {
+    background-position: -60% 0;
+  }
+}
+
+.shimmer-label {
+  background: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0.45) 30%,
+    #fff 50%,
+    rgba(255, 255, 255, 0.45) 70%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer-sweep 2.8s ease-in-out infinite;
+}
+
+/* 슬라이더 노브: 대기 중 "밀어보라"는 힌트 넛지 */
+@keyframes knob-nudge {
+  0%,
+  26%,
+  100% {
+    transform: translateX(0);
+  }
+  10% {
+    transform: translateX(9px);
+  }
+}
+
+.knob-nudge {
+  animation: knob-nudge 2.6s ease-in-out infinite;
+}
+
+/* ── 모션 최소화 환경: 모든 연출 제거, 내용은 항상 보이게 ─────── */
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   .animate-marquee,
   .animate-marquee-slow,
-  .gold-glow {
+  .animate-marquee-slower,
+  .gold-glow,
+  .live-dot,
+  .feed-in,
+  .typing-dot,
+  .aurora,
+  .float-y,
+  .shimmer-label,
+  .knob-nudge,
+  .pms-progress-run {
+    animation: none;
+  }
+
+  .shimmer-label {
+    color: #fff;
+    background: none;
+  }
+
+  .grow-panel {
+    transition: none;
+  }
+
+  .stage {
+    opacity: 1;
     animation: none;
   }
 
@@ -82,6 +351,10 @@ body {
   .reveal-on {
     opacity: 1;
     transform: none;
+    transition: none;
+  }
+
+  .faq-panel {
     transition: none;
   }
 }

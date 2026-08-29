@@ -50,14 +50,31 @@ export default function MuinPage() {
           무인관제
         </p>
         <h1 className="mt-4 max-w-4xl text-[32px] font-semibold leading-[1.35] tracking-[-0.03em] md:text-[48px]">
-          밤샘 걱정 없는 사장님의 완벽한 자유를 위해.
+          고객이 먼저 부르기 전에,
           <br />
-          슬낭이 사장님 업장에 꼭 맞춰드릴게요.
+          관제가 먼저 답합니다.
         </h1>
-        <p className="mt-5 text-sm leading-6 text-muted">
-          *4개 국어 가능, 5성급 호텔 출신자 포함. 전 인원 모두 호텔 관련 법규가
-          숙지됨.
+        <p className="mt-6 max-w-3xl text-[18px] leading-8 text-muted">
+          키오스크 화면 밖에서 생기는 질문과 돌발 상황까지. 움직임을 감지하면
+          숙련된 관제 요원이 즉시 고객 응대를 시작합니다.
         </p>
+        <p className="mt-3 text-sm leading-6 text-muted">
+          *4개 국어 가능, 5성급 호텔 출신자 포함. 전 인원 호텔 관련 법규 숙지.
+        </p>
+        <div className="relative mt-12 aspect-[16/8] overflow-hidden rounded-[28px] bg-night">
+          <Image
+            src={IMG.controlCenter}
+            alt="호텔 로비 상황을 실시간으로 확인하고 고객을 응대하는 관제 요원"
+            fill
+            className="object-cover"
+            sizes="(min-width: 768px) 72rem, 100vw"
+            preload
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(7,12,23,0.62),transparent_58%)]" />
+          <p className="absolute bottom-6 left-6 text-[14px] font-semibold text-white md:bottom-8 md:left-8">
+            슬낭 실시간 선대응 관제센터
+          </p>
+        </div>
       </section>
 
       <section className="bg-cream px-5 py-16 md:px-8 md:py-24">

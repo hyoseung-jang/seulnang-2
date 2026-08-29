@@ -1,17 +1,23 @@
 export const IMG = {
   logo: "/images/home/company-logo.png",
   hero: "/images/home/first-photo.png",
+  heroPoster: "/images/home/hero-lobby-poster.jpg",
+  oneClickPoster: "/images/home/oneclick-app-poster.jpg",
+  kioskOnlyPain: "/images/generated/kiosk-only-pain.jpg",
+  controlCenter: "/images/generated/control-center.jpg",
   kioskDevice: "/images/home/kiosk-photo.png",
-  appPhone: "/images/home/mobile-app.png",
-  aboutHero: "/images/aboutus/night-hotel.png",
-  pmsRoom: "/images/pms/room-management.png",
-  pmsInventory: "/images/pms/Inventory-Management.png",
+  kioskLobby: "/images/home/kiosk-lobby.jpg",
+  aboutHero: "/images/generated/control-center.jpg",
+  appLive: "/images/app/app-live.jpg",
+  appOneClick: "/images/app/app-oneclick.jpg",
+  pmsRoom: "/images/pms/pms-rooms.jpg",
+  pmsSales: "/images/pms/pms-sales.jpg",
+  pmsInventory: "/images/pms/pms-ota.jpg",
   pmsReservation: "/images/pms/date-reservation.png",
-  pmsHousekeeping: "/images/pms/housekeeping.png",
+  pmsHousekeeping: "/images/pms/pms-housekeeping.jpg",
   elevatorKiosk: "/images/kiosk/elevator.png",
   supplyLocker: "/images/kiosk/supply-locker-only.png",
   appInquiry: "/images/kiosk/app-inquiry.png",
-  appControl: "/images/kiosk/app-control.png",
   appLog1: "/images/kiosk/app-log-pay.png",
   appLog2: "/images/kiosk/app-log-need.png",
   appLog3: "/images/kiosk/app-log-check.png",
@@ -22,6 +28,14 @@ export const IMG = {
   save: "https://framerusercontent.com/images/gPfLUhd1wCcQ55WZCFN6xooLc.png?width=96&height=96",
   rest: "https://framerusercontent.com/images/TtlpBdFayerL3wj1fh7WcoWxu8Q.png?width=96&height=96",
   flex: "https://framerusercontent.com/images/WoolQGgLjWKVIc1qyudVonqxzo.png?width=96&height=96",
+} as const;
+
+/* 힉스필드로 제작한 브랜드 영상 — 포스터는 각 영상의 첫 프레임과 동일해야 한다.
+   hero-lobby: 실제 키오스크 로비 사진(kiosk-lobby.jpg)을 시작 프레임으로 영상화.
+   oneclick-app: 실제 관리자앱 '무인 프런트 전환' 화면을 합성해 원클릭 퇴근 스토리로 영상화. */
+export const VIDEOS = {
+  heroNight: "/videos/hero-lobby.mp4",
+  oneClick: "/videos/oneclick-app.mp4",
 } as const;
 
 export const LINKS = {

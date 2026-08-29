@@ -12,6 +12,19 @@
       "runtimeExecutable": "env",
       "runtimeArgs": ["SMTP_PASSWORD=", "npm", "run", "dev"],
       "port": 3000
+    },
+    {
+      "name": "dev-verify",
+      "runtimeExecutable": "env",
+      "runtimeArgs": ["SMTP_PASSWORD=", "npm", "run", "dev", "--", "-p", "3010"],
+      "port": 3010
+    },
+    {
+      "name": "dev-check",
+      "runtimeExecutable": "env",
+      "runtimeArgs": ["SMTP_PASSWORD=", "npm", "run", "dev"],
+      "port": 3020,
+      "autoPort": true
     }
   ]
 }
