@@ -32,6 +32,9 @@ export function OneClickDemo({ poster, src, children }: OneClickDemoProps) {
   const [warm, setWarm] = useState(false); // 뷰포트 근접 시 영상 프리로드
   const [videoOn, setVideoOn] = useState(false);
   const [ended, setEnded] = useState(false);
+  /* 전환이 성사된 "순간"만 표시하는 신호 — 값이 바뀔 때마다 트랙 스윕과
+     노브 링이 한 번씩 다시 재생된다(React key 로 애니메이션을 되감는다). */
+  const [ignition, setIgnition] = useState(0);
 
   const reducedRef = useRef(false);
   const interactedRef = useRef(false);
@@ -81,6 +84,7 @@ export function OneClickDemo({ poster, src, children }: OneClickDemoProps) {
 
   const activate = useCallback(() => {
     setActive(true);
+    setIgnition((n) => n + 1);
     playVideo();
   }, [playVideo]);
 
@@ -231,6 +235,10 @@ export function OneClickDemo({ poster, src, children }: OneClickDemoProps) {
   return (
     <div
       ref={rootRef}
+      /* 좌측 카피는 서버에서 내려온 children 이다. 여기서 상태를 속성으로
+         노출해 두면 CSS 만으로 헤드라인의 .oneclick-accent 가 함께 켜진다 —
+         "관제까지 함께 켜집니다"라는 문장과 조작이 같은 순간에 붙는다. */
+      data-oneclick={active ? "on" : "off"}
       className="grid gap-9 md:grid-cols-[1fr_0.92fr] md:items-center md:gap-14"
     >
       {/* ── 좌: 카피 + 슬라이더 ─────────────────────────────── */}
@@ -254,6 +262,14 @@ export function OneClickDemo({ poster, src, children }: OneClickDemoProps) {
               style={{ width: fillWidth }}
               aria-hidden
             />
+            {/* 회로가 닫히는 순간 트랙 위를 한 번 훑고 지나가는 빛 */}
+            {active ? (
+              <div
+                key={`sweep-${ignition}`}
+                className="track-sweep pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.75),transparent)]"
+                aria-hidden
+              />
+            ) : null}
             {/* 라벨 */}
             <p
               className={`pointer-events-none absolute inset-0 grid place-items-center text-[15px] font-bold tracking-[0.01em] transition-opacity duration-300 ${
@@ -288,6 +304,13 @@ export function OneClickDemo({ poster, src, children }: OneClickDemoProps) {
               }`}
               style={{ transform: `translateX(${knobX}px)` }}
             >
+              {active ? (
+                <span
+                  key={`ring-${ignition}`}
+                  className="knob-ring pointer-events-none absolute inset-0 rounded-full ring-2 ring-gold-deep"
+                  aria-hidden
+                />
+              ) : null}
               <span
                 className={
                   active || dragging ? "" : "knob-nudge inline-flex"
@@ -333,7 +356,13 @@ export function OneClickDemo({ poster, src, children }: OneClickDemoProps) {
             }`}
             aria-hidden
           />
-          <div className="relative aspect-[3/4] overflow-hidden rounded-[28px] border border-ink/10 bg-night shadow-[0_30px_80px_rgba(18,18,43,0.35)]">
+          <div
+            className={`relative aspect-[3/4] overflow-hidden rounded-[28px] border bg-night transition-[transform,border-color,box-shadow] duration-700 ease-signature ${
+              active
+                ? "scale-[1.015] border-gold-deep/40 shadow-[0_36px_96px_rgba(199,149,0,0.28)]"
+                : "border-ink/10 shadow-[0_30px_80px_rgba(18,18,43,0.35)]"
+            }`}
+          >
             <Image
               src={poster}
               alt="원클릭 무인 전환 뒤 안심하고 호텔을 나서는 사장님"

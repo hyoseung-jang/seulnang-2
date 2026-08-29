@@ -5,14 +5,16 @@ import { IconFlex, IconRest, IconSave } from "@/components/BenefitIcons";
 import { CountUp } from "@/components/CountUp";
 import { CtaButton } from "@/components/CtaButton";
 import { FaqList } from "@/components/FaqList";
+import { HandoffRelay } from "@/components/HandoffRelay";
 import { HeroVideo } from "@/components/HeroVideo";
 import { LogoMarquee } from "@/components/LogoMarquee";
 import { OneClickDemo } from "@/components/OneClickDemo";
 import { PmsShowcase } from "@/components/PmsShowcase";
 import { Reveal } from "@/components/Reveal";
 import { ReviewMarquee } from "@/components/ReviewMarquee";
+import { ScrollSequence, SeqCaption } from "@/components/ScrollSequence";
 import { jsonLdString } from "@/lib/jsonld";
-import { COMPANY, FAQS, IMG, LINKS, VIDEOS } from "@/lib/site";
+import { COMPANY, FAQS, IMG, LINKS, SEQUENCES, VIDEOS } from "@/lib/site";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -109,6 +111,14 @@ const PMS_SCREENS = [
   },
 ];
 
+/* 키오스크 → 관제센터 → 사장님 앱 인계 3단계. 텍스트는 개편 전과 동일하며,
+   HandoffRelay 가 이 순서대로 금빛 신호를 흘려 인계를 눈에 보이게 한다. */
+const RELAY_STEPS = [
+  { no: "01", title: "키오스크", body: "예약 확인과 키 발급" },
+  { no: "02", title: "관제센터", body: "질문과 돌발 상황 응대" },
+  { no: "03", title: "사장님 앱", body: "운영 기록과 원클릭 전환" },
+];
+
 const zeroFees = [
   "렌탈비",
   "장비비",
@@ -118,13 +128,21 @@ const zeroFees = [
   "관리비",
 ];
 
+/* 체크는 currentColor 를 따른다 — 이 아이콘이 쓰이는 곳은 전부 다크 섹션이라
+   ink 로 고정돼 있으면 배경(bg-ink)과 같은 색이 돼 아예 보이지 않는다. */
 function CheckIcon() {
   return (
     <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5 shrink-0" aria-hidden>
-      <circle cx="10" cy="10" r="10" className="fill-ink/10" />
+      <circle
+        cx="10"
+        cy="10"
+        r="10"
+        className="icon-pop [fill:color-mix(in_srgb,currentColor_14%,transparent)]"
+      />
       <path
         d="m5.8 10.4 2.8 2.8 5.6-6"
-        className="stroke-ink"
+        className="draw-path stroke-current"
+        style={{ "--draw-len": 14 } as React.CSSProperties}
         strokeWidth="1.9"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -136,10 +154,11 @@ function CheckIcon() {
 function CrossIcon() {
   return (
     <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5 shrink-0" aria-hidden>
-      <circle cx="10" cy="10" r="10" className="fill-black/[0.07]" />
+      <circle cx="10" cy="10" r="10" className="icon-pop fill-black/[0.07]" />
       <path
         d="m7 7 6 6M13 7l-6 6"
-        className="stroke-[#9a9a9a]"
+        className="draw-path stroke-[#9a9a9a]"
+        style={{ "--draw-len": 18 } as React.CSSProperties}
         strokeWidth="1.8"
         strokeLinecap="round"
       />
@@ -232,8 +251,8 @@ export default function Home() {
       {/* 키오스크 단독 운영의 실제 한계 */}
       <section id="difference" className="scroll-mt-20 px-5 py-20 md:px-8 md:py-28">
         <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-16">
-          <Reveal>
-            <div className="relative aspect-[16/10] overflow-hidden rounded-[28px] bg-[#e9eaec]">
+          <Reveal variant="left">
+            <div className="parallax-media relative aspect-[16/10] overflow-hidden rounded-[28px] bg-[#e9eaec]">
               <Image
                 src={IMG.kioskOnlyPain}
                 alt="늦은 밤 무인 키오스크 앞에서 도움을 받지 못해 불편을 겪는 고객"
@@ -250,7 +269,10 @@ export default function Home() {
             <p className="text-[13px] font-semibold tracking-[0.08em] text-gold-text">
               기계만 두면 끝일까요?
             </p>
-            <h2 className="mt-4 text-[31px] font-black leading-[1.28] tracking-[-0.04em] md:text-[46px]">
+            <h2
+              data-motion="headline"
+              className="mt-4 text-[31px] font-black leading-[1.28] tracking-[-0.04em] md:text-[46px]"
+            >
               고객이 막히는 순간,
               <br />
               결국 직원이 필요합니다.
@@ -259,7 +281,11 @@ export default function Home() {
               예약 오류, 결제 실패, 신분증 확인, 비품 문의. 키오스크는 정해진
               화면 밖의 질문에 답하지 못합니다.
             </p>
-            <ul className="mt-8 divide-y divide-line border-y border-line text-[16px]">
+            <ul
+              data-motion="stagger"
+              data-motion-x=""
+              className="mt-8 divide-y divide-line border-y border-line text-[16px]"
+            >
               {[
                 "고객이 헤매면 사장님에게 전화",
                 "장애가 나면 직원이 현장 출동",
@@ -271,7 +297,11 @@ export default function Home() {
                 </li>
               ))}
             </ul>
-            <p className="mt-7 text-[18px] font-extrabold text-ink">
+            <p
+              data-motion="rise-sm"
+              style={{ "--m-delay": "420ms" } as React.CSSProperties}
+              className="mt-7 text-[18px] font-extrabold text-ink"
+            >
               그래서 키오스크만으로는 인건비가 사라지지 않습니다.
             </p>
           </Reveal>
@@ -306,7 +336,10 @@ export default function Home() {
               <p className="text-[13px] font-semibold tracking-[0.08em] text-gold">
                 슬낭의 차이
               </p>
-              <h2 className="mt-4 text-[31px] font-black leading-[1.28] tracking-[-0.04em] md:text-[48px]">
+              <h2
+                data-motion="headline"
+                className="mt-4 text-[31px] font-black leading-[1.28] tracking-[-0.04em] md:text-[48px]"
+              >
                 키오스크가 묻고,
                 <br />
                 관제가 답합니다.
@@ -315,7 +348,11 @@ export default function Home() {
                 슬낭은 기계만 설치하지 않습니다. 고객이 들어오는 순간부터
                 체크인, 신분증 확인, 문의, 장애 대응까지 관제 요원이 이어받습니다.
               </p>
-              <ul className="mt-8 space-y-4 text-[16px] font-semibold">
+              <ul
+                data-motion="stagger"
+                data-motion-x=""
+                className="mt-8 space-y-4 text-[16px] font-semibold"
+              >
                 {[
                   "고객 호출 전 움직임 감지 선대응",
                   "결제와 객실 문의 즉시 원격 해결",
@@ -328,8 +365,8 @@ export default function Home() {
                 ))}
               </ul>
             </Reveal>
-            <Reveal delay={90}>
-              <div className="relative aspect-[16/10] overflow-hidden rounded-[28px] border border-white/10 bg-night">
+            <Reveal variant="right" delay={90}>
+              <div className="parallax-media relative aspect-[16/10] overflow-hidden rounded-[28px] border border-white/10 bg-night">
                 <Image
                   src={IMG.controlCenter}
                   alt="호텔 로비 상황을 실시간으로 확인하며 고객을 응대하는 슬낭 관제 요원"
@@ -343,20 +380,8 @@ export default function Home() {
               </div>
             </Reveal>
           </div>
-          <Reveal delay={120}>
-            <ol className="mt-14 grid divide-y divide-white/12 border-y border-white/12 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-              {[
-                ["01", "키오스크", "예약 확인과 키 발급"],
-                ["02", "관제센터", "질문과 돌발 상황 응대"],
-                ["03", "사장님 앱", "운영 기록과 원클릭 전환"],
-              ].map(([no, title, body]) => (
-                <li key={title} className="py-6 sm:px-7 sm:first:pl-0 sm:last:pr-0">
-                  <p className="tnum text-[12px] font-bold text-gold">{no}</p>
-                  <h3 className="mt-2 text-[19px] font-bold">{title}</h3>
-                  <p className="mt-2 text-[14px] text-white/52">{body}</p>
-                </li>
-              ))}
-            </ol>
+          <Reveal delay={120} className="mt-14">
+            <HandoffRelay steps={RELAY_STEPS} />
           </Reveal>
         </div>
       </section>
@@ -369,10 +394,15 @@ export default function Home() {
               <p className="text-[13px] font-semibold tracking-[0.08em] text-gold-text">
                 원클릭 무인전환
               </p>
-              <h2 className="mt-4 text-[31px] font-black leading-[1.3] tracking-[-0.04em] md:text-[44px]">
+              <h2
+                data-motion="headline"
+                className="mt-4 text-[31px] font-black leading-[1.3] tracking-[-0.04em] md:text-[44px]"
+              >
                 키오스크만 켜지는 게 아닙니다.
                 <br />
-                <span className="text-gold-text">관제까지 함께 켜집니다.</span>
+                <span className="oneclick-accent text-gold-text">
+                  관제까지 함께 켜집니다.
+                </span>
               </h2>
               <p className="mt-5 max-w-xl text-[17px] leading-[1.8] text-muted">
                 앱에서 슥 밀면 그 순간부터 관제 요원이 프론트를 이어받습니다.
@@ -386,7 +416,7 @@ export default function Home() {
       {/* 사장님 앱 실제 화면: 방금 본 원클릭이 실제 앱임을 증명 */}
       <section className="relative overflow-hidden bg-ink px-5 py-24 text-white md:px-8 md:py-32">
         <div
-          className="aurora pointer-events-none absolute -top-28 left-[-12%] h-96 w-[44rem] rounded-full bg-gold/10 blur-3xl"
+          className="aurora aurora-drift-scroll pointer-events-none absolute -top-28 left-[-12%] h-96 w-[44rem] rounded-full bg-gold/10 blur-3xl"
           aria-hidden
         />
         <div className="relative mx-auto max-w-6xl">
@@ -395,7 +425,10 @@ export default function Home() {
               <p className="text-[13px] font-semibold tracking-[0.08em] text-gold">
                 사장님 전용 앱 · 실제 화면
               </p>
-              <h2 className="mt-4 text-[31px] font-black leading-[1.28] tracking-[-0.04em] md:text-[46px]">
+              <h2
+                data-motion="headline"
+                className="mt-4 text-[31px] font-black leading-[1.28] tracking-[-0.04em] md:text-[46px]"
+              >
                 퇴근한 뒤의 프론트,
                 <br />폰 안에 다 있습니다.
               </h2>
@@ -404,7 +437,11 @@ export default function Home() {
                 무인 전환은 슥 미는 것으로 끝나고, 요일별 무인 운영 시간표는
                 앱이 대신 지킵니다.
               </p>
-              <ul className="mt-8 space-y-4 text-[16px] font-semibold">
+              <ul
+                data-motion="stagger"
+                data-motion-x=""
+                className="mt-8 space-y-4 text-[16px] font-semibold"
+              >
                 {[
                   "로비 라이브 영상으로 현장을 바로 확인",
                   "예약 확인 → 본인 확인 → 키 발급, 체크인 단계 표시",
@@ -419,31 +456,42 @@ export default function Home() {
             </Reveal>
             <Reveal delay={90}>
               <div className="mx-auto flex max-w-[560px] items-start justify-center gap-5 md:gap-7">
-                <figure className="float-y w-1/2 max-w-[240px]">
-                  <Image
-                    src={IMG.appLive}
-                    alt="사장님 앱 관제 화면 — 로비 라이브 영상과 체크인 진행 단계"
-                    width={852}
-                    height={1846}
-                    className="h-auto w-full rounded-[30px] border border-white/12 shadow-[0_30px_80px_rgba(0,0,0,0.5)]"
-                    sizes="(min-width: 768px) 240px, 44vw"
-                  />
+                <figure
+                  className="parallax w-1/2 max-w-[240px]"
+                  style={
+                    { "--px-from": "7%", "--px-to": "-7%" } as React.CSSProperties
+                  }
+                >
+                  <div className="float-y">
+                    <Image
+                      src={IMG.appLive}
+                      alt="사장님 앱 관제 화면 — 로비 라이브 영상과 체크인 진행 단계"
+                      width={852}
+                      height={1846}
+                      className="h-auto w-full rounded-[30px] border border-white/12 shadow-[0_30px_80px_rgba(0,0,0,0.5)]"
+                      sizes="(min-width: 768px) 240px, 44vw"
+                    />
+                  </div>
                   <figcaption className="mt-4 text-center text-[13px] font-semibold text-white/55">
                     실시간 관제 LIVE
                   </figcaption>
                 </figure>
                 <figure
-                  className="float-y w-1/2 max-w-[240px] pt-12"
-                  style={{ animationDelay: "1.8s" }}
+                  className="parallax w-1/2 max-w-[240px] pt-12"
+                  style={
+                    { "--px-from": "-4%", "--px-to": "4%" } as React.CSSProperties
+                  }
                 >
-                  <Image
-                    src={IMG.appOneClick}
-                    alt="사장님 앱 무인 프런트 전환 화면 — 밀어서 전환 슬라이더와 요일별 무인 운영 시간"
-                    width={921}
-                    height={2000}
-                    className="h-auto w-full rounded-[30px] border border-white/12 shadow-[0_30px_80px_rgba(0,0,0,0.5)]"
-                    sizes="(min-width: 768px) 240px, 44vw"
-                  />
+                  <div className="float-y" style={{ animationDelay: "1.8s" }}>
+                    <Image
+                      src={IMG.appOneClick}
+                      alt="사장님 앱 무인 프런트 전환 화면 — 밀어서 전환 슬라이더와 요일별 무인 운영 시간"
+                      width={921}
+                      height={2000}
+                      className="h-auto w-full rounded-[30px] border border-white/12 shadow-[0_30px_80px_rgba(0,0,0,0.5)]"
+                      sizes="(min-width: 768px) 240px, 44vw"
+                    />
+                  </div>
                   <figcaption className="mt-4 text-center text-[13px] font-semibold text-white/55">
                     원클릭 무인 전환
                   </figcaption>
@@ -454,19 +502,62 @@ export default function Home() {
         </div>
       </section>
 
+      {/* 콤팩트 키오스크: 스크롤 시퀀스 — 실제 카운터 컷에서 카메라가 물러나며
+          기기가 로비 속 한 점이 될 때까지. "작다"를 숫자가 아니라 공간으로 증명한다.
+          스크롤이 곧 재생 헤드라 사용자가 민 만큼만 물러난다. */}
+      <section className="bg-night text-white">
+        <ScrollSequence
+          base={SEQUENCES.kiosk.base}
+          frameCount={SEQUENCES.kiosk.frames}
+          poster={SEQUENCES.kiosk.poster}
+          posterAlt="호텔 로비 대리석 카운터 위의 슬낭 소형 키오스크 — 카드 키 발급기와 태블릿"
+          lengthVh={260}
+        >
+          <SeqCaption from={0} to={0.3} align="bl">
+            <p className="text-[13px] font-semibold tracking-[0.08em] text-gold">
+              콤팩트 키오스크
+            </p>
+            <p className="mt-4 text-[36px] font-black leading-[1.15] tracking-[-0.045em] md:text-[60px]">
+              키오스크는 작게.
+            </p>
+          </SeqCaption>
+          <SeqCaption from={0.38} to={0.66} align="bl">
+            <p className="text-[36px] font-black leading-[1.15] tracking-[-0.045em] md:text-[60px]">
+              단 <span className="text-gold-bright">30cm</span>.
+            </p>
+            <p className="mt-4 text-[14px] text-white/65 md:text-[16px]">
+              *태블릿 270x220, 카드 키 발급기 300x350x400(mm)
+            </p>
+          </SeqCaption>
+          <SeqCaption from={0.74} to={1} align="bc">
+            <p className="text-[34px] font-black leading-[1.2] tracking-[-0.045em] md:text-[56px]">
+              응대는 <span className="text-gold-bright">끝까지.</span>
+            </p>
+            <p className="mt-4 text-[16px] leading-[1.75] text-white/75 md:text-[18px]">
+              화면 밖의 모든 질문은 관제 요원이 이어받습니다.
+            </p>
+          </SeqCaption>
+        </ScrollSequence>
+      </section>
+
       {/* 실제 제품은 생성 이미지 대신 원본 자산을 그대로 사용 */}
       <section className="px-5 py-20 md:px-8 md:py-28">
         <div className="mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-2">
-          <Reveal className="order-2 md:order-1">
+          <Reveal variant="zoom" className="order-2 md:order-1">
             <div className="relative min-h-[430px] overflow-hidden rounded-[28px] bg-[radial-gradient(circle_at_50%_38%,#ffffff_0%,#f2f3f5_54%,#e5e7eb_100%)]">
-              <div className="absolute inset-x-[10%] bottom-[9%] h-[8%] rounded-full bg-black/15 blur-2xl" aria-hidden />
-              <Image
-                src={IMG.kioskDevice}
-                alt="슬낭 30cm 소형 키오스크와 카드 키 발급기"
-                fill
-                className="object-contain p-8 md:p-10"
-                sizes="(min-width: 768px) 44vw, 90vw"
+              <div
+                className="hover-shadow absolute inset-x-[10%] bottom-[9%] h-[8%] rounded-full bg-black/15 blur-2xl"
+                aria-hidden
               />
+              <div className="hover-product absolute inset-0">
+                <Image
+                  src={IMG.kioskDevice}
+                  alt="슬낭 30cm 소형 키오스크와 카드 키 발급기"
+                  fill
+                  className="object-contain p-8 md:p-10"
+                  sizes="(min-width: 768px) 44vw, 90vw"
+                />
+              </div>
             </div>
           </Reveal>
           <Reveal className="order-1 md:order-2">
@@ -474,7 +565,10 @@ export default function Home() {
               <p className="text-[13px] font-semibold tracking-[0.08em] text-gold-text">
                 콤팩트 키오스크
               </p>
-              <h2 className="mt-4 text-[31px] font-black leading-[1.3] tracking-[-0.04em] md:text-[44px]">
+              <h2
+                data-motion="headline"
+                className="mt-4 text-[31px] font-black leading-[1.3] tracking-[-0.04em] md:text-[44px]"
+              >
                 키오스크는 작게.
                 <br />
                 응대는 끝까지.
@@ -486,7 +580,7 @@ export default function Home() {
               <p className="mt-3 text-sm text-muted">
                 *태블릿 270x220, 카드 키 발급기 300x350x400(mm)
               </p>
-              <ol className="mt-9 space-y-5">
+              <ol data-motion="stagger" data-motion-x="" className="mt-9 space-y-5">
                 {[
                   "기존 인테리어를 해치지 않는 작은 크기",
                   "장비비와 렌탈비 없이 합리적인 도입",
@@ -512,7 +606,10 @@ export default function Home() {
             <p className="text-[13px] font-semibold tracking-[0.08em] text-gold-text">
               운영 관리 PMS · 실제 화면
             </p>
-            <h2 className="mt-4 max-w-3xl text-[31px] font-black leading-[1.3] tracking-[-0.04em] md:text-[44px]">
+            <h2
+              data-motion="headline"
+              className="mt-4 max-w-3xl text-[31px] font-black leading-[1.3] tracking-[-0.04em] md:text-[44px]"
+            >
               밤에는 관제가 지키고,
               <br />
               낮에는 <span className="text-gold-text">PMS가 정리합니다.</span>
@@ -522,7 +619,7 @@ export default function Home() {
               운영을 하나의 화면에서 관리하세요.
             </p>
           </Reveal>
-          <Reveal delay={90}>
+          <Reveal variant="zoom" delay={90}>
             <div className="mt-12">
               <PmsShowcase screens={PMS_SCREENS} />
             </div>
@@ -805,31 +902,33 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 클로징: 오늘 밤부터는, 편히 주무세요 ────────────────────── */}
-      <section className="relative overflow-hidden text-white">
-        <Image
-          src={IMG.aboutHero}
-          alt=""
-          fill
-          className="object-cover"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(6,6,20,0.82),rgba(6,6,20,0.55)_50%,rgba(6,6,20,0.88))]" />
-        <div className="relative mx-auto flex min-h-[70vh] max-w-4xl flex-col items-center justify-center px-5 py-28 text-center md:px-8 md:py-36">
-          <Reveal>
+      {/* ── 클로징: 오늘 밤부터는, 편히 주무세요 ──────────────────────
+          스크롤 시퀀스 — 깊은 밤의 호텔이 스크롤을 미는 만큼 새벽으로 밝아온다.
+          "오늘 밤부터는," 은 밤에, "편히 주무세요." 는 동이 트는 순간에 나타난다.
+          브랜드 내러티브(밤=문제 → 새벽=해방)를 사용자의 손으로 완성시킨다.
+          주의: 래퍼에 overflow-hidden 을 두면 안쪽 sticky 가 붙지 않는다. */}
+      <section className="bg-night text-white">
+        <ScrollSequence
+          base={SEQUENCES.dawn.base}
+          frameCount={SEQUENCES.dawn.frames}
+          poster={SEQUENCES.dawn.poster}
+          posterAlt="깊은 밤, 로비에만 금빛 불이 켜진 호텔 외관 — 스크롤하면 새벽이 밝아온다"
+          lengthVh={230}
+        >
+          <SeqCaption from={0} to={1} align="center">
             <h2 className="font-display text-[34px] font-black leading-[1.4] tracking-[-0.02em] md:text-[56px]">
               오늘 밤부터는,
               <br />
-              편히 주무세요.
+              <span className="seq-line2">편히 주무세요.</span>
             </h2>
-            <p className="mt-6 text-[16px] leading-[1.8] text-white/70 md:text-[19px]">
+            <p className="seq-late mt-6 text-[16px] leading-[1.8] text-white/70 md:text-[19px]">
               프론트는 슬낭이 지키겠습니다.
               <br />
               우리 업장에 맞는 운영 방식과 견적, 무료 상담으로 확인해 보세요.
             </p>
-          </Reveal>
-          <Reveal delay={120}>
-            <div className="mt-10 flex flex-col items-center gap-5 sm:flex-row">
+          </SeqCaption>
+          <SeqCaption from={0.62} to={1} align="bc">
+            <div className="flex flex-col items-center gap-5 sm:flex-row">
               <CtaButton>무료 상담 신청</CtaButton>
               <a
                 href={LINKS.tel}
@@ -838,8 +937,8 @@ export default function Home() {
                 {COMPANY.phone}
               </a>
             </div>
-          </Reveal>
-        </div>
+          </SeqCaption>
+        </ScrollSequence>
       </section>
 
       <script

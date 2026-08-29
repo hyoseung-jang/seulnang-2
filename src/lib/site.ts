@@ -38,6 +38,24 @@ export const VIDEOS = {
   oneClick: "/videos/oneclick-app.mp4",
 } as const;
 
+/* 스크롤 시퀀스(ScrollSequence) 프레임 세트 — 힉스필드 영상을 12fps webp 로
+   잘라 둔 것. base/{960,1600}/NNN.webp 구조이고 poster 는 1번 프레임과 동일하다.
+   kiosk: 실제 키오스크 카운터 컷(kiosk-lobby.jpg)에서 카메라가 물러나며
+          기기가 로비 속 한 점이 될 때까지 — "작음"을 공간으로 증명.
+   dawn:  밤 호텔 외관에서 새벽이 밝아올 때까지 — "오늘 밤부터는, 편히 주무세요". */
+export const SEQUENCES = {
+  kiosk: {
+    base: "/sequences/kiosk",
+    frames: 145,
+    poster: "/sequences/kiosk/poster.jpg",
+  },
+  dawn: {
+    base: "/sequences/dawn",
+    frames: 120,
+    poster: "/sequences/dawn/poster.jpg",
+  },
+} as const;
+
 export const LINKS = {
   home: "/",
   pms: "/pms",

@@ -22,6 +22,8 @@ export function PmsShowcase({ screens }: { screens: Screen[] }) {
   const [active, setActive] = useState(0);
   const [auto, setAuto] = useState(false);
   const [cycle, setCycle] = useState(0); // 진행바 재시작 트리거
+  /* 화면이 바뀔 때마다 증가 — 들어오는 스크린샷과 주사선 애니메이션을 되감는다 */
+  const [swap, setSwap] = useState(0);
   const interactedRef = useRef(false);
 
   /* 뷰포트 진입 시 자동 순환 시작 */
@@ -48,6 +50,7 @@ export function PmsShowcase({ screens }: { screens: Screen[] }) {
     const timer = window.setInterval(() => {
       setActive((prev) => (prev + 1) % screens.length);
       setCycle((c) => c + 1);
+      setSwap((n) => n + 1);
     }, AUTO_MS);
     return () => window.clearInterval(timer);
   }, [auto, screens.length]);
@@ -56,6 +59,7 @@ export function PmsShowcase({ screens }: { screens: Screen[] }) {
     interactedRef.current = true;
     setAuto(false);
     setActive(index);
+    setSwap((n) => n + 1);
   }, []);
 
   return (
@@ -133,30 +137,47 @@ export function PmsShowcase({ screens }: { screens: Screen[] }) {
           <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
-          <span className="ml-3 hidden rounded-md bg-black/[0.05] px-3 py-1 text-[11px] font-medium text-muted sm:block">
+          <span
+            key={`label-${swap}`}
+            className="feed-in ml-3 hidden rounded-md bg-black/[0.05] px-3 py-1 text-[11px] font-medium text-muted sm:block"
+          >
             슬낭 PMS · {screens[active].title}
           </span>
         </div>
-        <div className="relative aspect-[2000/1140]">
-          {screens.map((screen, index) => (
-            <div
-              key={screen.key}
-              id={`pms-panel-${screen.key}`}
-              role="tabpanel"
-              aria-hidden={index !== active}
-              className={`absolute inset-0 transition-opacity duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                index === active ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              <Image
-                src={screen.src}
-                alt={`슬낭 PMS ${screen.title} 실제 화면 — ${screen.desc}`}
-                fill
-                className="object-cover"
-                sizes="(min-width: 1024px) 56vw, 100vw"
-              />
-            </div>
-          ))}
+        <div className="relative aspect-[2000/1140] overflow-hidden">
+          {screens.map((screen, index) => {
+            const on = index === active;
+            return (
+              <div
+                key={screen.key}
+                id={`pms-panel-${screen.key}`}
+                role="tabpanel"
+                aria-hidden={!on}
+                className={`absolute inset-0 transition-opacity duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                  on ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <div
+                  key={on ? `in-${swap}` : "idle"}
+                  className={`absolute inset-0 ${on ? "pms-screen-in" : ""}`}
+                >
+                  <Image
+                    src={screen.src}
+                    alt={`슬낭 PMS ${screen.title} 실제 화면 — ${screen.desc}`}
+                    fill
+                    className="object-cover"
+                    sizes="(min-width: 1024px) 56vw, 100vw"
+                  />
+                </div>
+              </div>
+            );
+          })}
+          {/* 전환 순간 화면을 한 번 훑는 주사선 */}
+          <div
+            key={`scan-${swap}`}
+            className="pms-scan pointer-events-none absolute inset-x-0 top-0 h-1/3 bg-[linear-gradient(180deg,transparent,rgba(255,226,77,0.16),transparent)]"
+            aria-hidden
+          />
         </div>
       </div>
     </div>

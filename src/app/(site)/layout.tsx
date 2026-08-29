@@ -4,12 +4,14 @@ import { Footer } from "@/components/Footer";
 import { FloatingContact } from "@/components/FloatingContact";
 import { Header } from "@/components/Header";
 import { MarketingTags } from "@/components/MarketingTags";
+import { MotionRoot } from "@/components/MotionRoot";
 import { StickyCta } from "@/components/StickyCta";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-dvh">
       <MarketingTags />
+      <MotionRoot />
       <Header />
       {children}
       <Footer />

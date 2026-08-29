@@ -17,6 +17,19 @@
   --color-kakao: #fee500;
   --color-muted: #454545;
   --color-line: #e8e8e8;
+
+  /* ── 모션 아이덴티티 ───────────────────────────────────────────
+     성격은 Premium 하나로 고정한다: 과장된 오버슈트 없이 빠르게 출발해
+     길게 감속하는 곡선. 사이트의 모든 연출이 이 서명 이징을 공유한다. */
+  --ease-signature: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-emphasized: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --ease-exit: cubic-bezier(0.3, 0, 1, 1);
+}
+
+:root {
+  /* 지속시간 팔레트 — 두 단계만 쓴다. 작은 요소는 기본, 큰 블록은 느림. */
+  --dur-base: 620ms;
+  --dur-slow: 900ms;
 }
 
 html {
@@ -107,34 +120,405 @@ body {
   animation: gold-pulse 3.6s ease-in-out infinite;
 }
 
-/* ── 스크롤 리빌(기존 Reveal 컴포넌트가 사용) ──────────────────── */
-.reveal {
-  opacity: 1;
-  transform: translateY(22px);
-  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+/* ══════════════════════════════════════════════════════════════════
+   스크롤 리빌 시스템
+   ─────────────────────────────────────────────────────────────────
+   [data-motion] 요소는 기본적으로 "보이는" 상태다. MotionRoot 가
+   html[data-motion-ready] 를 붙여야만(= 무장) 숨김 상태가 시작된다.
+   따라서 JS 가 죽거나 느리거나, 크롤러가 읽을 때는 어떤 문구도 사라지지
+   않는다. 무장 이후에는 문서 전체를 담당하는 IntersectionObserver 하나가
+   뷰포트 진입 시 data-motion-in 을 붙여 등장을 트리거한다.
+
+   연출은 opacity / transform / clip-path 만 쓴다 — 전부 합성 스레드에서
+   처리돼 레이아웃을 다시 계산하지 않는다.
+   ══════════════════════════════════════════════════════════════════ */
+
+[data-motion] {
+  --m-y: 26px;
+  --m-x: 0px;
+  --m-scale: 1;
+  --m-delay: 0ms;
+  --m-dur: var(--dur-slow);
+  --m-child-step: 70ms;
 }
 
-.reveal-on {
+html[data-motion-ready] [data-motion] {
+  transition:
+    opacity calc(var(--m-dur) * 0.7) var(--ease-signature) var(--m-delay),
+    transform var(--m-dur) var(--ease-signature) var(--m-delay),
+    filter var(--m-dur) var(--ease-signature) var(--m-delay);
+}
+
+html[data-motion-ready]
+  [data-motion]:not([data-motion-in]):not([data-motion="stagger"]):not(
+    [data-motion="relay"]
+  ) {
+  opacity: 0;
+  transform: translate3d(var(--m-x), var(--m-y), 0) scale(var(--m-scale));
+}
+
+[data-motion][data-motion-in] {
   opacity: 1;
   transform: none;
 }
 
-/* ── 히어로 로드 시퀀스: JS 없이 CSS 애니메이션으로 무대 연출 ──── */
-@keyframes stage-up {
-  from {
-    opacity: 1;
-    transform: translateY(26px);
-  }
+/* 변형 — 방향과 무게만 바꾸고 이징·리듬은 공유한다 */
+[data-motion="rise-sm"] {
+  --m-y: 14px;
+  --m-dur: var(--dur-base);
+}
+
+[data-motion="left"] {
+  --m-x: -30px;
+  --m-y: 0px;
+}
+
+[data-motion="right"] {
+  --m-x: 30px;
+  --m-y: 0px;
+}
+
+[data-motion="zoom"] {
+  --m-y: 18px;
+  --m-scale: 0.965;
+}
+
+/* 헤드라인 — 초점이 맞아 들어오듯 흐릿한 상태에서 또렷해지며 자리를 잡는다.
+   글자를 쪼개지 않으므로 접근성·SEO 에 영향이 없고, blur 는 레이아웃 기하를
+   바꾸지 않아 IntersectionObserver 판정에도 개입하지 않는다.
+   (clip-path 를 쓰면 교차 사각형이 0 이 돼 헤드라인이 영영 등장하지 않는다.
+    Chrome 에서 실제로 재현됨 — 다시 도입하지 말 것.) */
+[data-motion="headline"] {
+  --m-y: 16px;
+  --m-x: 0px;
+  --m-dur: 1000ms;
+}
+
+html[data-motion-ready] [data-motion="headline"]:not([data-motion-in]) {
+  filter: blur(7px);
+}
+
+[data-motion="headline"][data-motion-in] {
+  filter: blur(0);
+}
+
+/* 계단식 등장 — 컨테이너는 가만히 있고 자식만 차례로 올라온다.
+   총 지연은 8번째 자식에서도 490ms 를 넘지 않는다. */
+html[data-motion-ready] [data-motion="stagger"] > * {
+  opacity: 0;
+  transform: translate3d(var(--m-x, 0px), var(--m-y, 16px), 0);
+  transition:
+    opacity 480ms var(--ease-signature),
+    transform 640ms var(--ease-signature);
+}
+
+/* 주의(특이도 함정): 숨김 규칙은 html 타입 선택자를 포함해 (0,2,1) 이다.
+   여기서 html[data-motion-ready] 를 빼면 (0,2,0) 이 돼 숨김 규칙에 지고,
+   목록 항목이 영영 투명한 채로 남는다. 접두사를 지우지 말 것. */
+html[data-motion-ready] [data-motion="stagger"][data-motion-in] > * {
+  opacity: 1;
+  transform: none;
+}
+
+/* 순번 지연은 이동뿐 아니라 아이콘 드로잉(--draw-delay)에도 물려준다.
+   행이 자리를 잡는 순간 그 행의 ✕/✓ 가 그려지도록 200ms 를 얹는다. */
+html[data-motion-ready] [data-motion="stagger"] > *:nth-child(1) {
+  transition-delay: var(--m-delay);
+  --draw-delay: calc(var(--m-delay) + 200ms);
+}
+html[data-motion-ready] [data-motion="stagger"] > *:nth-child(2) {
+  transition-delay: calc(var(--m-delay) + var(--m-child-step) * 1);
+  --draw-delay: calc(var(--m-delay) + var(--m-child-step) * 1 + 200ms);
+}
+html[data-motion-ready] [data-motion="stagger"] > *:nth-child(3) {
+  transition-delay: calc(var(--m-delay) + var(--m-child-step) * 2);
+  --draw-delay: calc(var(--m-delay) + var(--m-child-step) * 2 + 200ms);
+}
+html[data-motion-ready] [data-motion="stagger"] > *:nth-child(4) {
+  transition-delay: calc(var(--m-delay) + var(--m-child-step) * 3);
+  --draw-delay: calc(var(--m-delay) + var(--m-child-step) * 3 + 200ms);
+}
+html[data-motion-ready] [data-motion="stagger"] > *:nth-child(5) {
+  transition-delay: calc(var(--m-delay) + var(--m-child-step) * 4);
+  --draw-delay: calc(var(--m-delay) + var(--m-child-step) * 4 + 200ms);
+}
+html[data-motion-ready] [data-motion="stagger"] > *:nth-child(6) {
+  transition-delay: calc(var(--m-delay) + var(--m-child-step) * 5);
+  --draw-delay: calc(var(--m-delay) + var(--m-child-step) * 5 + 200ms);
+}
+html[data-motion-ready] [data-motion="stagger"] > *:nth-child(n + 7) {
+  transition-delay: calc(var(--m-delay) + var(--m-child-step) * 6);
+  --draw-delay: calc(var(--m-delay) + var(--m-child-step) * 6 + 200ms);
+}
+
+/* 목록 항목이 옆에서 들어오는 변형 — 문제 목록/약속 목록용.
+   ✕ 문제 목록과 ✓ 해결 목록이 같은 리듬으로 흘러 대구를 이룬다. */
+[data-motion="stagger"][data-motion-x] {
+  --m-x: -20px;
+  --m-y: 4px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   아이콘 드로잉 — ✕(문제)와 ✓(해결)이 같은 리듬으로 그려지며
+   두 섹션이 서로 대구를 이루게 한다.
+   ══════════════════════════════════════════════════════════════════ */
+
+.draw-path {
+  stroke-dasharray: var(--draw-len, 26);
+  stroke-dashoffset: var(--draw-len, 26);
+}
+
+[data-motion-in] .draw-path,
+[data-motion-in].draw-path {
+  animation: draw-in 620ms var(--ease-signature) both;
+  animation-delay: var(--draw-delay, 0ms);
+}
+
+@keyframes draw-in {
   to {
-    opacity: 1;
-    transform: none;
+    stroke-dashoffset: 0;
   }
 }
 
-.stage {
-  opacity: 1;
-  animation: stage-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: var(--d, 0ms);
+/* 아이콘 배경 링이 살짝 부풀었다 자리를 잡는다(도착의 무게).
+   SVG 도형은 transform 기준 상자가 뷰포트라서 fill-box 로 바꿔야 제자리에서 커진다. */
+.icon-pop {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+[data-motion-in] .icon-pop {
+  animation: icon-pop 520ms var(--ease-signature) both;
+  animation-delay: var(--draw-delay, 0ms);
+}
+
+@keyframes icon-pop {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   관제 릴레이 — "키오스크가 묻고, 관제가 답합니다" 를 눈으로 보이게.
+   목록 상단 경계선이 곧 신호선이고, 금빛 신호가 01 → 02 → 03 으로 건너간다.
+   모든 하위 애니메이션은 .relay[data-motion-in] 안에서만 돈다 — 화면 밖에서는
+   완전히 정지한다(모바일 배터리).
+   ══════════════════════════════════════════════════════════════════ */
+
+.relay {
+  --relay-dur: 5.4s;
+  --relay-start: 700ms;
+}
+
+/* 신호선: 섹션이 보이면 좌 → 우로 그어진다(무대 세팅) */
+.relay-rail {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1s var(--ease-signature) 120ms;
+}
+
+.relay[data-motion-in] .relay-rail {
+  transform: scaleX(1);
+}
+
+/* 신호(코멧): 선 위를 왼쪽 끝에서 오른쪽 끝까지 건너간다.
+   폭이 36% 이므로 -110% → 250% 가 정확히 레일 한 칸을 통과하는 거리다. */
+.relay-pulse {
+  opacity: 0;
+}
+
+.relay[data-motion-in] .relay-pulse {
+  animation: relay-run var(--relay-dur) linear infinite;
+  animation-delay: var(--relay-start);
+}
+
+@keyframes relay-run {
+  0% {
+    opacity: 0;
+    transform: translateX(-110%);
+  }
+  6% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(250%);
+  }
+  66%,
+  100% {
+    opacity: 0;
+    transform: translateX(250%);
+  }
+}
+
+/* 신호가 도착하는 순간 그 단계의 번호가 켜진다(원인 → 반응) */
+.relay-node {
+  --wake-at: 0s;
+}
+
+.relay[data-motion-in] .relay-num {
+  animation: relay-wake var(--relay-dur) var(--ease-signature) infinite;
+  animation-delay: calc(var(--relay-start) + var(--wake-at));
+}
+
+@keyframes relay-wake {
+  0%,
+  100% {
+    color: var(--color-gold);
+    scale: 1;
+    text-shadow: none;
+  }
+  5% {
+    color: var(--color-gold-bright);
+    scale: 1.18;
+    text-shadow: 0 0 18px rgba(255, 226, 77, 0.7);
+  }
+  24% {
+    color: var(--color-gold);
+    scale: 1;
+    text-shadow: none;
+  }
+}
+
+/* 칸을 훑고 지나가는 옅은 금빛 잔상 — 신호와 같은 방향으로 흐른다 */
+.relay-wash {
+  opacity: 0;
+}
+
+.relay[data-motion-in] .relay-wash {
+  animation: relay-wash var(--relay-dur) var(--ease-signature) infinite;
+  animation-delay: calc(var(--relay-start) + var(--wake-at) - 300ms);
+}
+
+@keyframes relay-wash {
+  0% {
+    opacity: 0;
+    transform: translateX(-60%);
+  }
+  8% {
+    opacity: 1;
+  }
+  30% {
+    opacity: 0;
+    transform: translateX(60%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(60%);
+  }
+}
+
+/* 단계 사이의 이음쇠 — 신호가 넘어가는 방향을 못 박는다.
+   scale 은 독립 속성이라 Tailwind 의 rotate 유틸리티와 충돌하지 않는다. */
+.relay-link {
+  opacity: 0.28;
+}
+
+.relay[data-motion-in] .relay-link {
+  animation: relay-link var(--relay-dur) var(--ease-signature) infinite;
+  animation-delay: calc(var(--relay-start) + var(--wake-at));
+}
+
+@keyframes relay-link {
+  0%,
+  100% {
+    opacity: 0.28;
+    scale: 1;
+  }
+  8% {
+    opacity: 1;
+    scale: 1.22;
+  }
+  30% {
+    opacity: 0.28;
+    scale: 1;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   원클릭 데모 — 스위치를 미는 순간 헤드라인의 "관제까지 함께 켜집니다"
+   가 실제로 켜진다. 조작과 주장이 같은 순간에 붙는다.
+   ══════════════════════════════════════════════════════════════════ */
+
+.oneclick-accent {
+  position: relative;
+  display: inline-block;
+  /* 형광펜처럼 뒤에서 차오르는 금빛. 배경으로 그리므로 글자색은 그대로 —
+     밝은 금색으로 글자를 칠하면 크림색 배경에서 대비가 무너진다. */
+  background-image: linear-gradient(
+    rgba(255, 191, 0, 0.3),
+    rgba(255, 191, 0, 0.3)
+  );
+  background-repeat: no-repeat;
+  background-position: 0 86%;
+  background-size: 0% 44%;
+  transition: background-size 780ms var(--ease-signature);
+}
+
+.oneclick-accent::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.08em;
+  height: 0.07em;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffbf00, #ffe24d);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 780ms var(--ease-signature);
+}
+
+[data-oneclick="on"] .oneclick-accent {
+  background-size: 100% 44%;
+}
+
+[data-oneclick="on"] .oneclick-accent::after {
+  transform: scaleX(1);
+}
+
+/* 스위치가 닫히는 순간 트랙 위를 한 번 지나가는 빛 */
+@keyframes track-sweep {
+  from {
+    transform: translateX(-60%);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  to {
+    transform: translateX(160%);
+    opacity: 0;
+  }
+}
+
+.track-sweep {
+  animation: track-sweep 900ms var(--ease-emphasized) both;
+}
+
+/* 노브가 도착하며 퍼지는 링 — 눌림에 대한 물리적 응답 */
+@keyframes knob-ring {
+  from {
+    opacity: 0.55;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2.1);
+  }
+}
+
+.knob-ring {
+  animation: knob-ring 760ms var(--ease-exit) both;
 }
 
 /* ── 라이브 관제 카드 ──────────────────────────────────────────── */
@@ -155,7 +539,7 @@ body {
 @keyframes feed-in {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translate3d(-14px, -6px, 0);
   }
   to {
     opacity: 1;
@@ -164,7 +548,7 @@ body {
 }
 
 .feed-in {
-  animation: feed-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: feed-in 620ms var(--ease-signature) both;
 }
 
 @keyframes typing-dot {
@@ -224,6 +608,250 @@ body {
   animation: float-y 6s ease-in-out infinite;
 }
 
+/* 제품 실물 — 아주 느리게 떠 있고, 그림자가 함께 호흡한다 */
+@keyframes hover-product {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(-0.4deg);
+  }
+}
+
+.hover-product {
+  animation: hover-product 7.5s ease-in-out infinite;
+}
+
+@keyframes hover-shadow {
+  0%,
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scaleX(0.9);
+    opacity: 0.62;
+  }
+}
+
+.hover-shadow {
+  animation: hover-shadow 7.5s ease-in-out infinite;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   스크롤 연동 모션 (CSS scroll-driven animations)
+   메인 스레드를 쓰지 않고 스크롤 위치에 직접 물린다. 미지원 브라우저는
+   @supports 밖으로 빠져 정적인 최종 상태만 보이므로 깨질 여지가 없다.
+   ══════════════════════════════════════════════════════════════════ */
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* 깊이감 — 요소마다 다른 속도로 흘러 레이어가 분리돼 보인다 */
+    .parallax {
+      animation: parallax-drift linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+
+    @keyframes parallax-drift {
+      from {
+        transform: translate3d(0, var(--px-from, 5%), 0);
+      }
+      to {
+        transform: translate3d(0, var(--px-to, -5%), 0);
+      }
+    }
+
+    /* 이미지 안쪽만 천천히 흘러 프레임에 깊이를 만든다 */
+    .parallax-media img {
+      animation: parallax-media linear both;
+      animation-timeline: view();
+      animation-range: cover;
+      will-change: transform;
+    }
+
+    @keyframes parallax-media {
+      from {
+        transform: scale(1.12) translate3d(0, 3.2%, 0);
+      }
+      to {
+        transform: scale(1.12) translate3d(0, -3.2%, 0);
+      }
+    }
+
+    /* 다크 섹션의 오로라가 스크롤에 따라 반대로 흘러 대위 운동을 만든다 */
+    .aurora-drift-scroll {
+      animation: aurora-scroll linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+
+    @keyframes aurora-scroll {
+      from {
+        transform: translate3d(-8%, 12%, 0);
+      }
+      to {
+        transform: translate3d(8%, -12%, 0);
+      }
+    }
+
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   스크롤 시퀀스 — 스크롤이 곧 재생 헤드인 핀 고정 캔버스(ScrollSequence).
+   무장 전(서버 HTML·JS 실패·모션 최소화·데이터 절약)에는 포스터와 캡션이
+   일반 흐름의 문단으로 전부 보인다. 컴포넌트가 루트에 data-seq-on 을 붙여
+   무장한 뒤에야 트랙이 길어지고 뷰가 핀 고정되며 캡션이 진행도 연동
+   오버레이로 바뀐다 — 리빌 시스템과 같은 안전 계약이다.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* 무장 전: 포스터는 둥근 프레임, 캡션은 그 아래 일반 문단 */
+.seq-view {
+  position: relative;
+  margin-inline: auto;
+  max-width: 72rem;
+  padding: 5rem 1.25rem;
+}
+
+.seq-media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 28px;
+}
+
+.seq-canvas {
+  opacity: 0;
+  transition: opacity 480ms var(--ease-signature);
+}
+
+.seq-canvas[data-seq-painted] {
+  opacity: 1;
+}
+
+.seq-shade {
+  display: none;
+}
+
+.seq-caps {
+  margin-top: 2.75rem;
+  display: grid;
+  gap: 2.5rem;
+}
+
+.seq-cap-inner {
+  max-width: 680px;
+}
+
+/* 무장 후: 핀 고정 무대 */
+[data-seq-on] .seq-track {
+  height: calc(100svh + var(--seq-len, 240) * 1vh);
+}
+
+[data-seq-on] .seq-view {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  max-width: none;
+  padding: 0;
+  overflow: hidden;
+}
+
+[data-seq-on] .seq-media {
+  position: absolute;
+  inset: 0;
+  aspect-ratio: auto;
+  border-radius: 0;
+}
+
+/* 캡션 가독성을 위한 상시 비네트 — 프레임 자체는 손대지 않는다 */
+[data-seq-on] .seq-shade {
+  display: block;
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgba(5, 8, 16, 0.66), transparent 42%),
+    linear-gradient(to bottom, rgba(5, 8, 16, 0.34), transparent 26%);
+}
+
+[data-seq-on] .seq-caps {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+}
+
+[data-seq-on] .seq-cap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  padding: clamp(24px, 7vw, 96px);
+  /* 하단 정렬 캡션이 StickyCta 플로팅 바와 겹치지 않도록 아래는 더 띄운다 */
+  padding-bottom: clamp(110px, 15vh, 150px);
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition:
+    opacity 600ms var(--ease-signature),
+    transform 760ms var(--ease-signature);
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+/* 지나간 캡션은 위로 빠져나간다 — 스크롤 진행 방향과 같은 쪽 */
+[data-seq-on] .seq-cap[data-seq-past] {
+  transform: translate3d(0, -20px, 0);
+}
+
+[data-seq-on] .seq-cap[data-seq-active] {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+[data-seq-on] .seq-cap[data-seq-align="bl"] {
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+[data-seq-on] .seq-cap[data-seq-align="tl"] {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+[data-seq-on] .seq-cap[data-seq-align="bc"] {
+  align-items: flex-end;
+  justify-content: center;
+  text-align: center;
+}
+
+[data-seq-on] .seq-cap[data-seq-align="center"] {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+[data-seq-on] .seq-cap[data-seq-align="center"] .seq-cap-inner,
+[data-seq-on] .seq-cap[data-seq-align="bc"] .seq-cap-inner {
+  margin-inline: auto;
+}
+
+/* 진행도 직결 연출 — 트랜지션이 아니라 스크롤 위치 그 자체를 따라간다.
+   opacity 는 0~1 밖 값을 스스로 클램프하므로 calc 만으로 충분하다.
+   무장 전에는 var 폴백(1)이 적용돼 항상 보인다. */
+.seq-line2,
+.seq-late {
+  opacity: 1;
+}
+
+[data-seq-on] .seq-line2 {
+  opacity: calc((var(--seq-p, 1) - 0.5) * 4);
+}
+
+[data-seq-on] .seq-late {
+  opacity: calc((var(--seq-p, 1) - 0.6) * 5);
+}
+
 /* ── PMS 쇼케이스: 자동 순환 진행바 ────────────────────────────── */
 @keyframes pms-progress {
   from {
@@ -240,6 +868,41 @@ body {
 
 .pms-progress-run {
   animation: pms-progress 5s linear both;
+}
+
+/* 화면 전환 — 실제 앱이 뷰를 갈아 끼우듯 살짝 밀려 들어온다 */
+@keyframes pms-screen-in {
+  from {
+    opacity: 0;
+    transform: scale(1.028) translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.pms-screen-in {
+  animation: pms-screen-in 700ms var(--ease-signature) both;
+}
+
+/* 전환 순간 화면을 한 번 훑는 주사선 */
+@keyframes pms-scan {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.75;
+  }
+  to {
+    transform: translateY(120%);
+    opacity: 0;
+  }
+}
+
+.pms-scan {
+  animation: pms-scan 880ms var(--ease-emphasized) both;
 }
 
 /* ── FAQ 아코디언: grid-rows 트릭으로 높이 트랜지션 ────────────── */
@@ -312,6 +975,26 @@ body {
   animation: knob-nudge 2.6s ease-in-out infinite;
 }
 
+/* ── 히어로 로드 시퀀스: JS 없이 CSS 애니메이션으로 무대 연출 ────
+   히어로 H1 은 LCP 요소다. 페이드(opacity)를 걸면 LCP 측정이 늦어지므로
+   여기서는 의도적으로 이동만 쓴다 — 중간부 리빌과 규칙이 다른 이유. */
+@keyframes stage-up {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 26px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.stage {
+  opacity: 1;
+  animation: stage-up 0.9s var(--ease-signature) both;
+  animation-delay: var(--d, 0ms);
+}
+
 /* ── 모션 최소화 환경: 모든 연출 제거, 내용은 항상 보이게 ─────── */
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -327,10 +1010,23 @@ body {
   .typing-dot,
   .aurora,
   .float-y,
+  .hover-product,
+  .hover-shadow,
   .shimmer-label,
   .knob-nudge,
-  .pms-progress-run {
-    animation: none;
+  .knob-ring,
+  .track-sweep,
+  .pms-progress-run,
+  .pms-screen-in,
+  .pms-scan,
+  .relay-pulse,
+  .relay-num,
+  .relay-wash,
+  .relay-link,
+  .draw-path,
+  .icon-pop,
+  .stage {
+    animation: none !important;
   }
 
   .shimmer-label {
@@ -338,23 +1034,42 @@ body {
     background: none;
   }
 
-  .grow-panel {
+  .grow-panel,
+  .faq-panel {
     transition: none;
   }
 
-  .stage {
-    opacity: 1;
-    animation: none;
+  .draw-path {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
   }
 
-  .reveal,
-  .reveal-on {
-    opacity: 1;
+  .relay-rail {
     transform: none;
     transition: none;
   }
 
-  .faq-panel {
+  .relay-pulse,
+  .relay-wash {
+    opacity: 0;
+  }
+
+  .relay-link {
+    opacity: 0.35;
+  }
+
+  .oneclick-accent,
+  .oneclick-accent::after {
     transition: none;
+  }
+
+  /* 리빌은 무장 자체를 무효화한다 — 처음부터 최종 상태로 보인다 */
+  html[data-motion-ready] [data-motion],
+  html[data-motion-ready] [data-motion] > *,
+  html[data-motion-ready] [data-motion="stagger"] > * {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
   }
 }
