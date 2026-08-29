@@ -39,11 +39,24 @@ const HOST_RULES: Array<[RegExp, string]> = [
 // 검색어를 실어 보내는 리퍼러의 쿼리 파라미터 이름들.
 const KEYWORD_PARAMS = ["query", "q", "keyword", "wd"];
 
+// 오가닉 소셜(우리가 운영하는 채널 — 프로필 링크·스토리·게시물)은 UTM 이 붙어
+// 있어도 리퍼러로 들어온 같은 플랫폼 유입과 한 채널로 합친다. 그래야 대시보드에서
+// "인스타그램"(우리 채널 유입) 과 "인스타그램 광고"(메타 유료 노출) 가 한 줄씩
+// 정확히 갈린다. utm_campaign 은 channel_detail 로 남으므로 세부 구분은 유지된다.
+const ORGANIC_SOCIAL_CHANNEL: Record<string, string> = {
+  instagram: "instagram",
+  meta: "facebook",
+  youtube: "youtube",
+  kakao: "kakao",
+};
+
 function normalizeUtmSource(source: string): string {
   const s = source.toLowerCase();
   if (s.includes("naver")) return "naver";
   if (s.includes("google")) return "google";
-  if (s === "fb" || s.includes("facebook") || s.includes("meta")) return "meta";
+  // 메타 광고 {{site_source_name}} 매크로 값: fb / ig / an(오디언스 네트워크) / msg(메신저).
+  if (s === "fb" || s === "an" || s === "msg" || s.includes("facebook") || s.includes("meta"))
+    return "meta";
   if (s.includes("instagram") || s === "ig") return "instagram";
   if (s.includes("kakao")) return "kakao";
   if (s.includes("youtube")) return "youtube";
@@ -110,10 +123,15 @@ export function classifyChannel(
   if (utmSource) {
     const source = normalizeUtmSource(utmSource);
     const medium = (utmMedium ?? "").toLowerCase();
+    // 메타 광고의 paid_social 은 "paid" 로 유료에 걸린다. 오가닉은 social/sns 만.
     const isPaid = /cpc|ppc|paid|display|ad|banner|retarget/.test(medium);
+    const organicChannel =
+      !isPaid && /social|sns/.test(medium) ? ORGANIC_SOCIAL_CHANNEL[source] : undefined;
     return {
       ...base,
-      channel: isPaid ? `${source}_ads` : `${source}_${medium || "link"}`.slice(0, 32),
+      channel: isPaid
+        ? `${source}_ads`
+        : (organicChannel ?? `${source}_${medium || "link"}`.slice(0, 32)),
       channelDetail: truncate(utmCampaign ?? `${utmSource}/${utmMedium ?? "-"}`, 255),
       searchKeyword: searchKeyword ?? utmTerm,
     };
