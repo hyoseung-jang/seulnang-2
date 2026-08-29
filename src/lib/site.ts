@@ -66,14 +66,14 @@ export const LINKS = {
   faq: "/#faq",
   blog: "https://blog.naver.com/PostList.naver?blogId=motel_safe_tech&categoryNo=1&from=menu&userSelectMenu=true",
   kakao: "https://pf.kakao.com/_dJbsX/friend",
-  tel: "tel:1551-6783",
+  tel: "tel:070-4152-5252",
   email: "mailto:info@rosegoldsoftware.co.kr",
 } as const;
 
 export const COMPANY = {
   name: "슬기로운 낭만지기",
   legal: "(주) 슬기로운 낭만지기",
-  phone: "1551-6783",
+  phone: "070-4152-5252",
   email: "info@rosegoldsoftware.co.kr",
   ceo: "김연수",
   bizNo: "719-88-02911",

@@ -49,7 +49,7 @@ const ORGANIZATION_JSONLD = {
   legalName: COMPANY.legal,
   url: SITE_URL,
   logo: `${SITE_URL}/images/home/company-logo.png`,
-  telephone: "+82-1551-6783",
+  telephone: "+82-70-4152-5252",
   email: COMPANY.email,
   address: {
     "@type": "PostalAddress",
