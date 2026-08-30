@@ -208,6 +208,20 @@ export default function MuinPage() {
             <h3 className="mt-6 text-[22px] font-semibold">업장 맞춤 운영 보고서</h3>
             <p className="mt-3 text-white/70">일일 매출, 특이사항, 컴플레인까지 모두.</p>
             <p className="mt-2">매일 아침 안심으로 시작하는 운영 리포트.</p>
+            {/* 리포트에 실제로 담기는 내역 — 키오스크 페이지의 관제 리포트 항목과 동일 */}
+            <ul data-motion="stagger" data-motion-x="" className="mt-6 space-y-2.5 text-[15px] text-white/75">
+              {[
+                "비품 판매·인원 추가 등 추가 결제 내역",
+                "CCTV 녹화 영상과 함께 남는 진상 고객 응대 내역",
+                "아침에 바로 조치할 객실 점검 요청",
+                "체크인 이후 추가 인원 신분증 확인 내역",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2.5">
+                  <span className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full bg-gold" aria-hidden />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="relative h-[260px] w-full">
             <Image

@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { IconFlex, IconRest, IconSave } from "@/components/BenefitIcons";
+import {
+  IconFlex,
+  IconGlobe,
+  IconHeadset,
+  IconRest,
+  IconSave,
+  IconUpdate,
+} from "@/components/BenefitIcons";
 import { CountUp } from "@/components/CountUp";
 import { CtaButton } from "@/components/CtaButton";
 import { FaqList } from "@/components/FaqList";
@@ -117,6 +124,47 @@ const RELAY_STEPS = [
   { no: "01", title: "키오스크", body: "예약 확인과 키 발급" },
   { no: "02", title: "관제센터", body: "질문과 돌발 상황 응대" },
   { no: "03", title: "사장님 앱", body: "운영 기록과 원클릭 전환" },
+];
+
+/* 라인업 카드 아래의 '기본 약속' — 제품이 아니라 도입 이후의 운영을 믿게
+   만드는 장치. 365일 24시간·해외 OTA 30개는 대표가 확정해 준 사실이다. */
+const promises = [
+  {
+    icon: IconHeadset,
+    label: "365일 24시간 고객센터",
+    title: (
+      <>
+        새벽에 터진 문제도,
+        <br />
+        전화 한 통이면 끝.
+      </>
+    ),
+    body: "숙박업의 사고는 꼭 밤에 납니다. 그래서 슬낭 고객센터는 잠들지 않습니다. 언제 전화하셔도 사람이 받고, 그 자리에서 처리합니다.",
+  },
+  {
+    icon: IconGlobe,
+    label: "해외 OTA 30개 자동 연동",
+    title: (
+      <>
+        해외 판매 채널도,
+        <br />
+        손대지 않아도 굴러갑니다.
+      </>
+    ),
+    body: "해외 OTA 30개와 자동으로 연동됩니다. 채널마다 객실 수량을 맞추던 일 없이, 예약이 들어오는 대로 재고가 알아서 정리됩니다.",
+  },
+  {
+    icon: IconUpdate,
+    label: "상시 무상 업데이트",
+    title: (
+      <>
+        오늘 도입한 시스템이,
+        <br />
+        내년엔 더 좋아져 있습니다.
+      </>
+    ),
+    body: "새 기능이 나와도 업데이트 비용은 받지 않습니다. 도입한 뒤에도 언제나 안정적으로 돌아가도록, 슬낭이 끝까지 책임집니다.",
+  },
 ];
 
 const zeroFees = [
@@ -509,6 +557,7 @@ export default function Home() {
         <ScrollSequence
           base={SEQUENCES.kiosk.base}
           frameCount={SEQUENCES.kiosk.frames}
+          variants={SEQUENCES.kiosk.variants}
           poster={SEQUENCES.kiosk.poster}
           posterAlt="호텔 로비 대리석 카운터 위의 슬낭 소형 키오스크 — 카드 키 발급기와 태블릿"
           lengthVh={260}
@@ -540,24 +589,42 @@ export default function Home() {
         </ScrollSequence>
       </section>
 
-      {/* 실제 제품은 생성 이미지 대신 원본 자산을 그대로 사용 */}
+      {/* 실제 설치 로비의 접사 크롭 2장 — 직전 스크롤 시퀀스(광각)에서
+          접사로 자연스럽게 넘어오며, 연출 이미지 없이 실물만 보여준다 */}
       <section className="px-5 py-20 md:px-8 md:py-28">
         <div className="mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-2">
           <Reveal variant="zoom" className="order-2 md:order-1">
-            <div className="relative min-h-[430px] overflow-hidden rounded-[28px] bg-[radial-gradient(circle_at_50%_38%,#ffffff_0%,#f2f3f5_54%,#e5e7eb_100%)]">
-              <div
-                className="hover-shadow absolute inset-x-[10%] bottom-[9%] h-[8%] rounded-full bg-black/15 blur-2xl"
-                aria-hidden
-              />
-              <div className="hover-product absolute inset-0">
-                <Image
-                  src={IMG.kioskDevice}
-                  alt="슬낭 30cm 소형 키오스크와 카드 키 발급기"
-                  fill
-                  className="object-contain p-8 md:p-10"
-                  sizes="(min-width: 768px) 44vw, 90vw"
-                />
-              </div>
+            <div className="flex items-start justify-center gap-5 md:gap-6">
+              <figure className="w-[55%] max-w-[300px]">
+                <div className="parallax-media overflow-hidden rounded-[24px] ring-1 ring-black/5">
+                  <Image
+                    src={IMG.kioskIssuer}
+                    alt="대리석 카운터 위 슬낭 카드 키 발급기와 원목 키 트레이 — 실제 설치 접사"
+                    width={600}
+                    height={730}
+                    className="h-auto w-full"
+                    sizes="(min-width: 768px) 300px, 50vw"
+                  />
+                </div>
+                <figcaption className="mt-3 text-center text-[13px] font-semibold text-muted">
+                  카드 키 발급기
+                </figcaption>
+              </figure>
+              <figure className="w-[45%] max-w-[250px] pt-14">
+                <div className="parallax-media overflow-hidden rounded-[24px] ring-1 ring-black/5">
+                  <Image
+                    src={IMG.kioskTablet}
+                    alt="슬낭 체크인 태블릿 실제 화면 — 예약 고객·현장 고객·추가 물품·퇴실 메뉴"
+                    width={580}
+                    height={460}
+                    className="h-auto w-full"
+                    sizes="(min-width: 768px) 250px, 42vw"
+                  />
+                </div>
+                <figcaption className="mt-3 text-center text-[13px] font-semibold text-muted">
+                  체크인 태블릿
+                </figcaption>
+              </figure>
             </div>
           </Reveal>
           <Reveal className="order-1 md:order-2">
@@ -709,10 +776,41 @@ export default function Home() {
               </Reveal>
             ))}
           </div>
+
+          {/* 어떤 제품을 골라도 함께 따라오는 세 가지 — 도입 이후가 불안한
+              사장님에게 '운영은 계속 책임진다'는 신호를 카드 바로 아래에서 준다. */}
+          <Reveal delay={140}>
+            <div className="mt-6 rounded-3xl bg-ink px-8 py-10 text-white md:px-12 md:py-12">
+              <p className="text-[13px] font-semibold tracking-[0.08em] text-gold">
+                어떤 솔루션을 고르셔도, 이 세 가지는 기본입니다
+              </p>
+              <div
+                data-motion="stagger"
+                className="mt-9 grid gap-10 md:grid-cols-3 md:gap-9"
+              >
+                {promises.map((item) => (
+                  <div key={item.label}>
+                    <item.icon className="h-12 w-12" />
+                    <p className="mt-5 text-[12px] font-semibold tracking-[0.1em] text-gold">
+                      {item.label}
+                    </p>
+                    <p className="mt-2.5 text-[20px] font-extrabold leading-[1.42] tracking-[-0.02em] md:text-[21px]">
+                      {item.title}
+                    </p>
+                    <p className="mt-3.5 text-[15px] leading-[1.78] text-white/62">
+                      {item.body}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Reveal>
         </div>
       </section>
 
-      {/* ── 도입 효과 ───────────────────────────────────────────────── */}
+      {/* ── 도입 효과 ─────────────────────────────────────────────────
+          '진짜 인건비가 줄어드는가'를 고용의 밤과 관제의 밤으로 맞세워
+          항목별로 증명한 뒤, 기존 성과 수치로 못 박는다. */}
       <section className="px-5 py-20 md:px-8 md:py-28">
         <div className="mx-auto max-w-6xl">
           <Reveal>
@@ -721,8 +819,89 @@ export default function Home() {
               관제 인력으로
               <br className="hidden md:block" /> 누리는 압도적인 운영 효율
             </h2>
+            <p className="mt-5 max-w-2xl text-[17px] leading-[1.8] text-muted">
+              직원을 고용하면 손님이 없는 시간에도 인건비가 나갑니다. 슬낭은
+              맡긴 시간만 계산합니다. 인건비가 고정비에서, 쓴 만큼만 내는
+              변동비로 바뀝니다.
+            </p>
           </Reveal>
-          <div className="mt-12 grid gap-5 md:grid-cols-3">
+
+          <div className="mt-12 grid gap-5 lg:grid-cols-2">
+            <Reveal className="h-full">
+              <div className="h-full rounded-3xl bg-[#f4f4f6] p-7 md:p-9">
+                <p className="text-sm font-semibold text-muted">
+                  직원을 고용한 밤
+                </p>
+                <p className="mt-3 text-[22px] font-bold tracking-[-0.02em] text-[#5a5a5a] md:text-[24px]">
+                  자는 손님뿐인 새벽에도, 월급은 나갑니다.
+                </p>
+                <ul
+                  data-motion="stagger"
+                  data-motion-x=""
+                  className="mt-7 space-y-4 text-[16px] text-muted"
+                >
+                  {[
+                    "매달 고정으로 나가는 야간 근무 월급",
+                    "주휴수당과 4대 보험은 또 별도",
+                    "갑작스런 퇴사, 대타 구하기는 사장님 몫",
+                    "명절도 주말도 비워둘 수 없는 근무표",
+                  ].map((item) => (
+                    <li key={item} className="flex items-center gap-3">
+                      <CrossIcon />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
+            <Reveal delay={90} className="h-full">
+              <div className="relative h-full">
+                <div
+                  className="gold-glow absolute -inset-2 rounded-[28px] bg-gold blur-xl"
+                  aria-hidden
+                />
+                <div className="relative h-full rounded-3xl bg-ink p-7 text-white md:p-9">
+                  <p className="text-sm font-semibold text-gold">
+                    슬낭에 맡긴 밤
+                  </p>
+                  <p className="mt-3 flex flex-wrap items-end gap-x-1.5">
+                    <span className="tnum text-[40px] font-black leading-none tracking-[-0.04em] text-gold-bright md:text-[48px]">
+                      2,900
+                    </span>
+                    <span className="text-[18px] font-bold md:text-[20px]">
+                      원
+                    </span>
+                    <span className="mb-0.5 text-[14px] text-white/55">
+                      / 시간 · 부가세 포함
+                    </span>
+                  </p>
+                  <ul
+                    data-motion="stagger"
+                    data-motion-x=""
+                    className="mt-7 space-y-4 text-[16px] font-semibold"
+                  >
+                    {[
+                      "맡긴 시간만 계산, 안 맡긴 시간은 0원",
+                      "채용도, 교육도, 퇴사 걱정도 없음",
+                      "명절도 새벽도 똑같은 품질의 응대",
+                    ].map((item) => (
+                      <li key={item} className="flex items-center gap-3">
+                        <CheckIcon />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </Reveal>
+          </div>
+
+          <Reveal>
+            <p className="mt-12 text-[18px] font-extrabold text-ink md:text-[20px]">
+              그 차이는, 숫자로 이렇게 남습니다.
+            </p>
+          </Reveal>
+          <div className="mt-6 grid gap-5 md:grid-cols-3">
             {[
               {
                 icon: IconSave,
@@ -911,6 +1090,7 @@ export default function Home() {
         <ScrollSequence
           base={SEQUENCES.dawn.base}
           frameCount={SEQUENCES.dawn.frames}
+          variants={SEQUENCES.dawn.variants}
           poster={SEQUENCES.dawn.poster}
           posterAlt="깊은 밤, 로비에만 금빛 불이 켜진 호텔 외관 — 스크롤하면 새벽이 밝아온다"
           lengthVh={230}

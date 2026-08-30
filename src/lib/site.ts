@@ -5,8 +5,11 @@ export const IMG = {
   oneClickPoster: "/images/home/oneclick-app-poster.jpg",
   kioskOnlyPain: "/images/generated/kiosk-only-pain.jpg",
   controlCenter: "/images/generated/control-center.jpg",
-  kioskDevice: "/images/home/kiosk-photo.png",
   kioskLobby: "/images/home/kiosk-lobby.jpg",
+  /* 아래 두 컷은 kiosk-lobby.jpg 의 실사 디테일 크롭 — 단품 연출 이미지 대신
+     실제 설치 로비에서 잘라 쓴다(광각↔접사로 같은 사진이어도 다른 컷처럼 읽힘). */
+  kioskIssuer: "/images/kiosk/kiosk-detail-issuer.webp",
+  kioskTablet: "/images/kiosk/kiosk-detail-tablet.webp",
   aboutHero: "/images/generated/control-center.jpg",
   appLive: "/images/app/app-live.jpg",
   appOneClick: "/images/app/app-oneclick.jpg",
@@ -15,8 +18,10 @@ export const IMG = {
   pmsInventory: "/images/pms/pms-ota.jpg",
   pmsReservation: "/images/pms/date-reservation.png",
   pmsHousekeeping: "/images/pms/pms-housekeeping.jpg",
-  elevatorKiosk: "/images/kiosk/elevator.png",
-  supplyLocker: "/images/kiosk/supply-locker-only.png",
+  adminRooms: "/images/kiosk/admin-rooms.webp",
+  appHousekeeping: "/images/kiosk/app-housekeeping.webp",
+  keyLockerTall: "/images/kiosk/key-locker-tall.webp",
+  keyLockerCompact: "/images/kiosk/key-locker-compact.webp",
   appInquiry: "/images/kiosk/app-inquiry.png",
   appLog1: "/images/kiosk/app-log-pay.png",
   appLog2: "/images/kiosk/app-log-need.png",
@@ -177,7 +182,7 @@ export const FAQS = [
   },
   {
     q: "카드키가 아닌 열쇠 키면 어떻게 하나요?",
-    a: "열쇠 키 업장도 운영 방식에 맞춰 설계합니다. 상담 시 현재 키 형태를 알려주시면 됩니다.",
+    a: "열쇠 키 업장은 차키 보관함으로 열쇠를 내어주고 돌려받아, 카드키 없이도 관제 서비스를 그대로 이용할 수 있습니다. 상담 시 현재 키 형태를 알려주시면 됩니다.",
   },
   {
     q: "설치비가 있나요?",

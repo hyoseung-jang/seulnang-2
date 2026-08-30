@@ -43,6 +43,67 @@ export function IconRest({ className }: IconProps) {
   );
 }
 
+/* 아래 3종은 제품 라인업의 '기본 약속' 밴드용 — 다크 배경 위에서도
+   골드 면 + 잉크 획 조합이 그대로 성립한다. */
+export function IconHeadset({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 48 48" fill="none" className={className} aria-hidden>
+      <circle cx="24" cy="24" r="18" className="fill-gold" />
+      <path
+        d="M15.5 26v-3.2c0-4.9 3.8-8.8 8.5-8.8s8.5 3.9 8.5 8.8V26"
+        className="stroke-ink"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+      <rect x="13.5" y="24.5" width="5" height="8" rx="2.4" className="fill-ink" />
+      <rect x="29.5" y="24.5" width="5" height="8" rx="2.4" className="fill-ink" />
+      <path
+        d="M32 32.8c0 2.4-2.2 3.7-5.5 3.7"
+        className="stroke-ink"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+export function IconGlobe({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 48 48" fill="none" className={className} aria-hidden>
+      <circle cx="24" cy="24" r="18" className="fill-gold" />
+      <circle cx="24" cy="24" r="11" className="stroke-ink" strokeWidth="2.1" />
+      <path
+        d="M13.5 24h21M24 13.2c-3.1 2.9-4.7 6.7-4.7 10.8s1.6 7.9 4.7 10.8c3.1-2.9 4.7-6.7 4.7-10.8s-1.6-7.9-4.7-10.8Z"
+        className="stroke-ink"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function IconUpdate({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 48 48" fill="none" className={className} aria-hidden>
+      <circle cx="24" cy="24" r="18" className="fill-gold" />
+      <path
+        d="M32.5 21.5a9 9 0 0 0-16-2.4M15.5 26.5a9 9 0 0 0 16 2.4"
+        className="stroke-ink"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M32.8 14.8v6.9h-6.9M15.2 33.2v-6.9h6.9"
+        className="stroke-ink"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function IconFlex({ className }: IconProps) {
   return (
     <svg viewBox="0 0 48 48" fill="none" className={className} aria-hidden>
