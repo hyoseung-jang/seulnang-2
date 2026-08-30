@@ -13,7 +13,11 @@ import { useEffect, useRef } from "react";
    - 서버 HTML 은 포스터 + 모든 캡션을 일반 흐름으로 그대로 보여 준다.
      JS 가 죽거나 크롤러가 읽어도 문구가 사라질 수 없다.
    - 하이드레이션 뒤 이 컴포넌트가 루트에 data-seq-on 을 붙여야만(무장)
-     트랙이 길어지고 뷰가 핀 고정되며 캡션이 진행도 연동 오버레이가 된다.
+     뷰가 핀 고정되고 캡션이 진행도 연동 오버레이가 된다.
+   - 다만 트랙의 '높이'만은 CSS 가 처음부터 잡아 둔다. 하이드레이션 뒤에
+     문서가 수천 px 자라면 그 전에 끝난 브라우저의 스크롤 복원·해시 이동이
+     통째로 어긋나기 때문이다. 무장하지 못하는 사정이면 data-seq-off 로
+     그 예약을 되돌린다.
    - prefers-reduced-motion / 데이터 절약 모드에서는 무장하지 않는다 —
      정적 레이아웃이 곧 최종 상태다.
    - 프레임을 한 장도 못 읽으면(예: AVIF 미지원 구형 브라우저) 스스로 무장을
@@ -109,13 +113,48 @@ export function ScrollSequence({
     const track = trackRef.current;
     const canvas = canvasRef.current;
     if (!root || !track || !canvas) return;
+
+    /* 트랙 높이가 바뀌면 그 아래의 모든 내용이 함께 밀린다. 트랙이 화면 위쪽에
+       통째로 있을 때 그 일이 벌어지면 사용자는 읽던 곳이 아닌 데로 순간이동
+       당하므로, 밀린 만큼 스크롤도 같이 옮겨 읽던 자리를 지킨다.
+
+       기준은 높이 변화량이 아니라 "화면 기준 트랙 하단"의 이동량이다. 트랙
+       아래의 모든 내용은 트랙 하단과 함께 움직이고, 브라우저가 스스로 자리를
+       다시 잡아 주는 경우에는 relayout 직후의 강제 레이아웃에서 그 보정이 이미
+       반영돼 이동량이 0 이 된다 — 이중 보정으로 페이지 끝까지 튕기는 것을 막는다.
+
+       트랙이 화면에 걸쳐 있거나 아래에 있으면 읽던 자리가 밀리지 않으므로
+       손대지 않는다. scroll-behavior 가 smooth 여도 즉시 옮기도록 instant 명시. */
+    const keepReadingPosition = (relayout: () => void) => {
+      const before = track.getBoundingClientRect();
+      relayout();
+      if (before.bottom > 0) return;
+      const shift = track.getBoundingClientRect().bottom - before.bottom;
+      if (shift !== 0) {
+        window.scrollTo({ top: window.scrollY + shift, behavior: "instant" });
+      }
+    };
+
+    /* 모션 최소화 환경은 CSS 가 핀 구간 높이를 예약하지도 않으므로 그대로 둔다 */
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    /* 여기부터는 CSS 가 이미 핀 구간 높이를 잡아 둔 상태다. 무장하지 못할
+       사정이면 예약을 되돌려야 빈 공간이 남지 않는다. */
+    const cancelReservation = () =>
+      keepReadingPosition(() => root.setAttribute("data-seq-off", ""));
+
     const connection = (
       navigator as Navigator & { connection?: { saveData?: boolean } }
     ).connection;
-    if (connection?.saveData) return;
+    if (connection?.saveData) {
+      cancelReservation();
+      return;
+    }
     const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    if (!ctx) {
+      cancelReservation();
+      return;
+    }
 
     root.setAttribute("data-seq-on", "");
 
@@ -343,7 +382,10 @@ export function ScrollSequence({
       nearViewport = false;
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
-      root.removeAttribute("data-seq-on");
+      keepReadingPosition(() => {
+        root.removeAttribute("data-seq-on");
+        root.setAttribute("data-seq-off", "");
+      });
       root.style.removeProperty("--seq-p");
       for (const cap of captions) {
         cap.el.removeAttribute("data-seq-active");

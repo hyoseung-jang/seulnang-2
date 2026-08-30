@@ -89,8 +89,44 @@ function scan() {
   }
 }
 
+/* 부드러운 스크롤을 켜는 스위치.
+
+   html 에 scroll-behavior: smooth 를 무조건 걸어 두면 브라우저가 스스로 하는
+   스크롤 복원(새로고침·뒤로가기)까지 1초 넘는 애니메이션이 되고, 그 사이
+   사용자가 반대로 굴려도 화면이 복원 지점까지 끌려간다 — 요금 섹션에서 위로
+   올리려 할 때 화면이 강제로 다른 곳으로 이동하던 원인이다.
+
+   앵커 이동은 언제나 클릭이나 키 입력에서 시작되고 스크롤 복원은 그렇지
+   않다. 그래서 첫 pointerdown/keydown 에만 표식을 붙여, 앵커의 부드러움은
+   그대로 두고 복원만 즉시 끝나게 한다. 표식은 문서당 한 번이면 되므로
+   붙인 뒤에는 리스너를 스스로 떼어 낸다. */
+const INTENT_EVENTS = ["pointerdown", "keydown"] as const;
+
+function useSmoothScrollOnIntent() {
+  useEffect(() => {
+    const root = document.documentElement;
+    if (root.hasAttribute("data-user-intent")) return;
+
+    const listening = new AbortController();
+    const arm = () => {
+      root.setAttribute("data-user-intent", "");
+      listening.abort();
+    };
+    for (const type of INTENT_EVENTS) {
+      window.addEventListener(type, arm, {
+        capture: true,
+        passive: true,
+        signal: listening.signal,
+      });
+    }
+    return () => listening.abort();
+  }, []);
+}
+
 export function MotionRoot() {
   const pathname = usePathname();
+
+  useSmoothScrollOnIntent();
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
