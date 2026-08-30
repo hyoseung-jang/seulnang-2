@@ -38,21 +38,41 @@ export const VIDEOS = {
   oneClick: "/videos/oneclick-app.mp4",
 } as const;
 
-/* 스크롤 시퀀스(ScrollSequence) 프레임 세트 — 힉스필드 영상을 12fps webp 로
-   잘라 둔 것. base/{960,1600}/NNN.webp 구조이고 poster 는 1번 프레임과 동일하다.
+/* 스크롤 시퀀스(ScrollSequence) 프레임 세트 — 힉스필드 마스터 영상을 12fps 로
+   잘라 둔 것. `base/<변형>/NNN.<확장자>` 구조이고 poster 는 1번 프레임과 같다.
+
+   variants 는 같은 컷의 렌디션 목록이고, 클라이언트는 뷰포트 비율에 맞는
+   하나만 내려받는다. tall 은 마스터(1920x1080)의 중앙을 잘라 둔 것이라
+   세로 화면에서 cover 로 보이던 영역과 화면이 정확히 같고, 높이가 그대로라
+   선명도는 wide 와 같으면서 용량은 절반이다.
+
+   둘 다 1920x1080 마스터를 scripts/build-scroll-sequence.sh 로 구운 것이고,
+   12.04초 전 구간을 12fps(145장)로 담는다. 화질점(crf)은 컷마다 다르다 —
+   빌더 주석 참고.
+
    kiosk: 실제 키오스크 카운터 컷(kiosk-lobby.jpg)에서 카메라가 물러나며
-          기기가 로비 속 한 점이 될 때까지 — "작음"을 공간으로 증명.
-   dawn:  밤 호텔 외관에서 새벽이 밝아올 때까지 — "오늘 밤부터는, 편히 주무세요". */
+          기기가 로비 속 한 점이 될 때까지 — "작음"을 공간으로 증명. (crf 31)
+   dawn:  밤 호텔 외관에서 새벽이 밝아올 때까지 — "오늘 밤부터는, 편히 주무세요".
+          화면 전체가 석재·목재 루버 텍스처라 같은 crf 에서 kiosk 의 두 배로
+          무겁다. wide crf 33 / tall crf 36 으로 잡아 구 1600 webp 보다 가볍다. */
 export const SEQUENCES = {
   kiosk: {
     base: "/sequences/kiosk",
     frames: 145,
     poster: "/sequences/kiosk/poster.jpg",
+    variants: [
+      { dir: "tall", w: 810, h: 1080, ext: "avif" },
+      { dir: "wide", w: 1920, h: 1080, ext: "avif" },
+    ],
   },
   dawn: {
     base: "/sequences/dawn",
-    frames: 120,
+    frames: 145,
     poster: "/sequences/dawn/poster.jpg",
+    variants: [
+      { dir: "tall", w: 810, h: 1080, ext: "avif" },
+      { dir: "wide", w: 1920, h: 1080, ext: "avif" },
+    ],
   },
 } as const;
 
