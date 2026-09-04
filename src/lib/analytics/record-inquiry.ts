@@ -9,6 +9,7 @@ import { cookies, headers } from "next/headers";
 import { analyticsEnabled, batch, type SqlQuery } from "@/lib/analytics/bridge";
 import { classifyChannel } from "@/lib/analytics/channel";
 import { parseUa } from "@/lib/analytics/ua";
+import { notifySalesHq } from "@/lib/saleshq";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -21,8 +22,20 @@ export type InquiryRecord = {
   mailSent: boolean;
 };
 
-export async function recordInquiry(input: InquiryRecord): Promise<void> {
-  if (!analyticsEnabled) return;
+/**
+ * 문의 기록 + 영업 HQ 즉시 등록. 분석 브리지가 꺼져 있어도 sales-hq 등록은 시도한다(문의는 무조건 영업에 닿아야 한다).
+ * 돌려주는 값: 분석 DB inquiries.id (기록 실패면 null).
+ */
+export async function recordInquiry(input: InquiryRecord): Promise<number | null> {
+  const createdAt = new Date().toISOString();
+  if (!analyticsEnabled) {
+    await notifySalesHq({
+      store: input.store, region: input.region, phone: input.phone, message: input.message, selfSource: input.selfSource,
+      channel: null, channelDetail: null, searchKeyword: null, referrer: null, landingPath: null,
+      utm: { source: null, medium: null, campaign: null, content: null, term: null }, device: null, visitNumber: null, createdAt,
+    });
+    return null;
+  }
 
   const cookieStore = await cookies();
   const headerStore = await headers();
@@ -96,5 +109,23 @@ export async function recordInquiry(input: InquiryRecord): Promise<void> {
     });
   }
 
-  await batch(queries);
+  let inquiryId: number | null = null;
+  try {
+    const results = await batch(queries);
+    const head = results[0] as { insertId?: number } | undefined;
+    inquiryId = typeof head?.insertId === "number" && head.insertId > 0 ? head.insertId : null;
+  } catch (error) {
+    console.error("[inquiry] 분석 DB 기록 실패 — sales-hq 즉시 등록은 계속한다", error);
+  }
+
+  // 영업 HQ 즉시 등록 — 분석 DB 의 같은 id 를 멱등 키로 넘겨 폴링과 중복되지 않게 한다
+  await notifySalesHq({
+    id: inquiryId,
+    store: input.store, region: input.region, phone: input.phone, message: input.message, selfSource: input.selfSource,
+    channel: attribution.channel, channelDetail: attribution.channelDetail, searchKeyword: attribution.searchKeyword,
+    referrer: referrer?.slice(0, 512) ?? null, landingPath,
+    utm: { source: attribution.utmSource, medium: attribution.utmMedium, campaign: attribution.utmCampaign, content: attribution.utmContent, term: attribution.utmTerm },
+    device: deviceType, visitNumber, createdAt,
+  });
+  return inquiryId;
 }
