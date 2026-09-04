@@ -12,8 +12,8 @@ export const NAVER_WCS_ID = "s_1d43ce56f7ab";
 // 구글 애즈 전환 태그 — 아직 ID/라벨을 모른다(애즈 콘솔 > 목표 > 전환에서 확인).
 // 값을 채우면 아래 코드가 자동으로 활성화된다. 비어 있는 동안에는 GA4 의
 // generate_lead 이벤트를 애즈에서 "GA4 가져오기"로 전환으로 쓰면 된다.
-export const GOOGLE_ADS_ID = ""; // 예: "AW-123456789"
-export const GOOGLE_ADS_LEAD_LABEL = ""; // 예: "AbC-DEf12GhIJkLmNO"
+export const GOOGLE_ADS_ID = "AW-18051195415"; // 애즈 계정 388-704-2390 의 태그 ID (전환 액션 tag_snippets 실측, 2026-09-04)
+export const GOOGLE_ADS_LEAD_LABEL = "lVLnCL24lcMcEJfEvZ9D"; // 전환 액션 "TechSol - 문의하기 40493"(primary) 라벨
 
 type Gtag = (...args: unknown[]) => void;
 type Fbq = (...args: unknown[]) => void;
