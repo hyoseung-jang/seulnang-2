@@ -189,6 +189,51 @@ export default function KioskPage() {
         </div>
       </section>
 
+      {/* ── 출시 예고: 스탠드형 배리어프리 키오스크 ─────────────── */}
+      <section className="bg-cream px-5 py-16 md:px-8 md:py-24">
+        <div className="mx-auto max-w-6xl">
+          <Reveal>
+            <article className="grid overflow-hidden rounded-[28px] bg-night text-white shadow-[0_24px_80px_rgba(18,18,43,0.14)] lg:grid-cols-[0.9fr_1.1fr] lg:rounded-[36px]">
+              <div className="flex flex-col justify-center px-7 py-12 sm:px-10 md:py-16 lg:px-14">
+                <p className="w-fit rounded-full border border-gold/35 bg-gold/10 px-4 py-2 text-[12px] font-bold tracking-[0.16em] text-gold">
+                  COMING SOON
+                </p>
+                <h2
+                  id="barrier-free-kiosk-title"
+                  data-motion="headline"
+                  className="mt-6 text-[30px] font-black leading-[1.35] tracking-[-0.04em] sm:text-[36px] lg:text-[42px]"
+                >
+                  스탠드형 배리어프리 키오스크,
+                  <br />곧 선보입니다.
+                </h2>
+                <p className="mt-6 text-[17px] leading-[1.8] text-white/70">
+                  누구나 불편 없이 체크인할 수 있도록
+                  <br className="hidden sm:block" /> 더 세심하게 설계하고
+                  있습니다.
+                </p>
+                <p className="mt-10 border-t border-white/12 pt-6 text-[14px] leading-6 text-white/55">
+                  출시 전 배리어프리 접근성 검사를 진행할 예정입니다.
+                </p>
+              </div>
+              <div className="relative overflow-hidden bg-[#c7a47d]">
+                <Image
+                  src={IMG.barrierFreeKiosk}
+                  alt="호텔 로비에 설치된 스탠드형 배리어프리 키오스크 출시 예정 이미지"
+                  width={1024}
+                  height={1536}
+                  className="block h-auto w-full"
+                  sizes="(min-width: 1024px) 40rem, 100vw"
+                />
+                <div
+                  className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-[linear-gradient(to_bottom,rgba(12,12,24,0.32),transparent)] lg:inset-y-0 lg:left-0 lg:h-auto lg:w-24 lg:bg-[linear-gradient(to_right,rgba(12,12,24,0.32),transparent)]"
+                  aria-hidden
+                />
+              </div>
+            </article>
+          </Reveal>
+        </div>
+      </section>
+
       {/* ── 출입 통제·비품함: 이미지 없이 성과 수치로 미는 신뢰 밴드 ── */}
       <section className="bg-cream px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-6xl">

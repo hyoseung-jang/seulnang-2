@@ -10,6 +10,7 @@ export const IMG = {
      실제 설치 로비에서 잘라 쓴다(광각↔접사로 같은 사진이어도 다른 컷처럼 읽힘). */
   kioskIssuer: "/images/kiosk/kiosk-detail-issuer.webp",
   kioskTablet: "/images/kiosk/kiosk-detail-tablet.webp",
+  barrierFreeKiosk: "/images/kiosk/barrier-free-kiosk-coming-soon.jpg",
   aboutHero: "/images/generated/control-center.jpg",
   appLive: "/images/app/app-live.jpg",
   appOneClick: "/images/app/app-oneclick.jpg",
