@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 const SITE_URL = "https://seulnang.co.kr";
 
 // 새 페이지를 만들면 여기에 추가하는 것까지가 출시다.
-const ROUTES = ["/", "/muin", "/kiosk", "/pms", "/aboutus", "/contact", "/privacy"];
+const ROUTES = ["/", "/muin", "/kiosk", "/pms", "/install-reviews", "/install-reviews/ulsan-old-kiosk", "/install-reviews/daejeon-operation-direction", "/install-reviews/cheongju-kiosk-support", "/install-reviews/gyeongsan-17-hour", "/install-reviews/jinju-monthly-start", "/aboutus", "/contact", "/privacy"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return ROUTES.map((path) => ({

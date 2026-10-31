@@ -87,6 +87,7 @@ export const LINKS = {
   pms: "/pms",
   muin: "/muin",
   kiosk: "/kiosk",
+  installReviews: "/install-reviews",
   contact: "/contact",
   about: "/aboutus",
   faq: "/#faq",

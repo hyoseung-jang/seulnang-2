@@ -86,6 +86,9 @@ export function Header() {
           <Link href={LINKS.faq} className="transition hover:text-gold-text">
             FAQ
           </Link>
+          <Link href={LINKS.installReviews} className="transition hover:text-gold-text">
+            설치 후기
+          </Link>
           <a
             href={LINKS.blog}
             target="_blank"
@@ -143,6 +146,9 @@ export function Header() {
             ))}
             <Link href={LINKS.faq} onClick={() => setOpen(false)}>
               FAQ
+            </Link>
+            <Link href={LINKS.installReviews} onClick={() => setOpen(false)}>
+              설치 후기
             </Link>
             <a href={LINKS.blog} target="_blank" rel="noreferrer">
               블로그
